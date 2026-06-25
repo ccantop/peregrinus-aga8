@@ -1,20 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import React from 'react'
 import { renderToBuffer } from '@react-pdf/renderer'
-import { PDFDocument } from 'pdf-lib'
+import { PDFDocument, PageSizes } from 'pdf-lib'
+import sharp from 'sharp'
 import { createClient } from '@/lib/supabase/server'
 import { MemoriaCalculoPDF, type DatosMemoria } from '@/lib/pdf/memoria-calculo-pdf'
 import { ReportePDF } from '@/lib/pdf/reporte-pdf'
 import { calcularCondicionesFisicas } from '@/lib/engine/calculo-z'
+import { generarPIDSvg } from '@/lib/pdf/pid-svg'
 
 const AGA8_URL = process.env.AGA8_SERVICE_URL
-
-const tipoLabel: Record<string, string> = {
-  city_gate:  'City Gate SISTRANGAS/CENAGAS',
-  industrial: 'Estacion Industrial',
-  ducto:      'Ducto Regional',
-  auditoria:  'Auditoria / Diagnostico',
-}
 
 export async function GET(req: NextRequest) {
   const id = req.nextUrl.searchParams.get('id')
@@ -79,41 +74,21 @@ export async function GET(req: NextRequest) {
     },
   }
 
-  const fecha = new Date(proyecto.creado_en).toLocaleDateString('es-MX', {
-    day: '2-digit', month: 'short', year: 'numeric',
-  }).toUpperCase()
-
-  const pidPayload = {
-    nombre: proyecto.nombre,
-    cliente: proyecto.cliente ?? '',
-    tipo_punto: tipoLabel[proyecto.tipo_punto] ?? proyecto.tipo_punto,
-    tecnologia_nombre: f1.tecnologia_nombre ?? 'Por definir',
+  // Generar P&ID como SVG → PNG para embeber en PDF
+  const pidSvg = generarPIDSvg({
+    tecnologia_nombre:     f1.tecnologia_nombre ?? 'Por definir',
     tecnologia_referencia: f1.tecnologia_referencia ?? '',
-    fiscal: f1.fiscal ?? false,
-    qmin: Number(f1.qmin),
-    qnorm: Number(f1.qnorm),
-    qmax: Number(f1.qmax),
-    presion_kgcm2: Number(f1.presion_kgcm2),
-    diametro_pulg: Number(f1.diametro_pulg),
-    sg: f1.sg ?? null,
-    co2_pct: f1.co2_pct ?? null,
-    n2_pct: f1.n2_pct ?? null,
-    fecha,
-    revision: '0',
-  }
+    tecnologia_key:        f1.tecnologia_key ?? '',
+    diametro_pulg:         Number(f1.diametro_pulg),
+    presion_kgcm2:         Number(f1.presion_kgcm2),
+    qnorm:                 Number(f1.qnorm),
+  })
+  const pidPng = await sharp(Buffer.from(pidSvg)).resize(1800).png().toBuffer()
 
-  // Generar los tres PDFs en paralelo
-  const [memoriaBuffer, reporteBuffer, pidResult] = await Promise.all([
+  // Generar los dos PDFs en paralelo
+  const [memoriaBuffer, reporteBuffer] = await Promise.all([
     renderToBuffer(React.createElement(MemoriaCalculoPDF, { d: dMemoria }) as never),
     renderToBuffer(React.createElement(ReportePDF, { d: { proyecto, f1, actividades: acts ?? [] } }) as never),
-    AGA8_URL
-      ? fetch(`${AGA8_URL}/pid-pdf`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(pidPayload),
-          signal: AbortSignal.timeout(30_000),
-        }).then(r => r.ok ? r.arrayBuffer() : null).catch(() => null)
-      : Promise.resolve(null),
   ])
 
   // Fusionar con pdf-lib
@@ -127,11 +102,14 @@ export async function GET(req: NextRequest) {
     pages.forEach(p => merged.addPage(p))
   }
 
-  if (pidResult) {
-    const src = await PDFDocument.load(new Uint8Array(pidResult))
-    const pages = await merged.copyPages(src, src.getPageIndices())
-    pages.forEach(p => merged.addPage(p))
-  }
+  // Página P&ID: A4 horizontal con el PNG centrado
+  const pidImg  = await merged.embedPng(pidPng)
+  const pidPage = merged.addPage([PageSizes.A4[1], PageSizes.A4[0]])  // landscape
+  const { width, height } = pidPage.getSize()
+  const scale = Math.min(width / pidImg.width, height / pidImg.height) * 0.92
+  const imgW  = pidImg.width  * scale
+  const imgH  = pidImg.height * scale
+  pidPage.drawImage(pidImg, { x: (width - imgW) / 2, y: (height - imgH) / 2, width: imgW, height: imgH })
 
   const pdfBytes = await merged.save()
 
