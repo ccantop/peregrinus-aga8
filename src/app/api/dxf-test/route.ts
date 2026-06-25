@@ -1,0 +1,62 @@
+import { NextResponse } from 'next/server'
+
+// DXF R12 absoluto mínimo — solo LINEs, sin TEXT ni CIRCLE
+const DXF_MINIMO = [
+  '  0', 'SECTION',
+  '  2', 'HEADER',
+  '  9', '$ACADVER',
+  '  1', 'AC1009',
+  '  0', 'ENDSEC',
+  '  0', 'SECTION',
+  '  2', 'TABLES',
+  '  0', 'TABLE',
+  '  2', 'LTYPE',
+  ' 70', '1',
+  '  0', 'LTYPE',
+  '  2', 'CONTINUOUS',
+  ' 70', '0',
+  '  3', 'Solid line',
+  ' 72', '65',
+  ' 73', '0',
+  ' 40', '0.0',
+  '  0', 'ENDTAB',
+  '  0', 'TABLE',
+  '  2', 'LAYER',
+  ' 70', '1',
+  '  0', 'LAYER',
+  '  2', '0',
+  ' 70', '0',
+  ' 62', '7',
+  '  6', 'CONTINUOUS',
+  '  0', 'ENDTAB',
+  '  0', 'ENDSEC',
+  '  0', 'SECTION',
+  '  2', 'ENTITIES',
+  '  0', 'LINE',
+  '  8', '0',
+  ' 10', '10.0',
+  ' 20', '10.0',
+  ' 30', '0.0',
+  ' 11', '200.0',
+  ' 21', '10.0',
+  ' 31', '0.0',
+  '  0', 'LINE',
+  '  8', '0',
+  ' 10', '10.0',
+  ' 20', '10.0',
+  ' 30', '0.0',
+  ' 11', '10.0',
+  ' 21', '100.0',
+  ' 31', '0.0',
+  '  0', 'ENDSEC',
+  '  0', 'EOF',
+].join('\r\n') + '\r\n'
+
+export async function GET() {
+  return new NextResponse(DXF_MINIMO, {
+    headers: {
+      'Content-Type': 'application/dxf',
+      'Content-Disposition': 'attachment; filename="test-minimo.dxf"',
+    },
+  })
+}
