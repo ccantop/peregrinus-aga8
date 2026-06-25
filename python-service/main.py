@@ -152,16 +152,12 @@ async def generar_dxf(inp: DXFInput):
     )
 
 
-@app.post("/pid-pdf")
-async def generar_pid_pdf(inp: DXFInput):
-    """Genera el P&ID como PDF A3 horizontal usando ezdxf + matplotlib."""
+@app.post("/pid-svg")
+async def generar_pid_svg(inp: DXFInput):
+    """Exporta el P&ID como SVG usando ezdxf SVGBackend (sin matplotlib)."""
     try:
-        import ezdxf
         from ezdxf.addons.drawing import RenderContext, Frontend
-        from ezdxf.addons.drawing.matplotlib import MatplotlibBackend
-        import matplotlib
-        matplotlib.use("Agg")
-        import matplotlib.pyplot as plt
+        from ezdxf.addons.drawing.svg import SVGBackend
 
         datos = DatosDXF(**inp.model_dump())
         dxf_bytes = crear_dxf(datos)
@@ -169,30 +165,17 @@ async def generar_pid_pdf(inp: DXFInput):
         stream = io.StringIO(dxf_bytes.decode("utf-8"))
         doc = ezdxf.read(stream)
 
-        fig, ax = plt.subplots(figsize=(16.54, 11.69))  # A3 landscape
-        ax.set_aspect("equal")
         ctx = RenderContext(doc)
-        backend = MatplotlibBackend(ax)
-        frontend = Frontend(ctx, backend)
-        frontend.draw_layout(doc.modelspace())
-        ax.margins(0.02)
-
-        buf = io.BytesIO()
-        fig.savefig(buf, format="pdf", bbox_inches="tight")
-        plt.close(fig)
-        buf.seek(0)
-        pdf_bytes = buf.read()
+        backend = SVGBackend()
+        Frontend(ctx, backend).draw_layout(doc.modelspace())
+        svg_string = backend.get_string(pretty=False)
 
     except Exception as exc:
-        raise HTTPException(status_code=500, detail=f"Error generando PDF del P&ID: {exc}")
-
-    slug = inp.nombre.lower().replace(" ", "-")[:30]
-    filename = f"peregrin-{slug}-pid-r{inp.revision}.pdf"
+        raise HTTPException(status_code=500, detail=f"Error generando SVG del P&ID: {exc}")
 
     return StreamingResponse(
-        io.BytesIO(pdf_bytes),
-        media_type="application/pdf",
-        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+        io.BytesIO(svg_string.encode("utf-8")),
+        media_type="image/svg+xml",
     )
 
 
