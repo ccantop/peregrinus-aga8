@@ -152,7 +152,7 @@ export async function GET(req: NextRequest) {
   // Página plano DXF (si el servicio Python respondió)
   if (pidDxfPng) await addImgPage(pidDxfPng)
 
-  const pdfBytes = await merged.save()
+  const pdfBytes = Buffer.from(await merged.save())
 
   const slug = proyecto.nombre
     .toLowerCase()
