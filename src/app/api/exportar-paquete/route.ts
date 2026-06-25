@@ -9,7 +9,10 @@ import { ReportePDF } from '@/lib/pdf/reporte-pdf'
 import { calcularCondicionesFisicas } from '@/lib/engine/calculo-z'
 import { generarPIDSvg } from '@/lib/pdf/pid-svg'
 
-const AGA8_URL = process.env.AGA8_SERVICE_URL
+const _aga8Raw = process.env.AGA8_SERVICE_URL
+const AGA8_URL = _aga8Raw
+  ? _aga8Raw.startsWith('http') ? _aga8Raw : `https://${_aga8Raw}`
+  : undefined
 
 export async function GET(req: NextRequest) {
   const id = req.nextUrl.searchParams.get('id')
