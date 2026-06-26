@@ -172,6 +172,9 @@ async def generar_pid_svg(inp: DXFInput):
         svg_string = backend.get_string(pretty=False)
 
     except Exception as exc:
+        import traceback
+        print(f"ERROR /pid-svg: {exc}")
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Error generando SVG del P&ID: {exc}")
 
     return StreamingResponse(
