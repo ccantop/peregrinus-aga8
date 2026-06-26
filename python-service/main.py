@@ -156,6 +156,7 @@ async def generar_dxf(inp: DXFInput):
 async def generar_pid_svg(inp: DXFInput):
     """Exporta el P&ID como SVG usando ezdxf SVGBackend (sin matplotlib)."""
     try:
+        import ezdxf
         from ezdxf.addons.drawing import RenderContext, Frontend
         from ezdxf.addons.drawing.svg import SVGBackend
 
