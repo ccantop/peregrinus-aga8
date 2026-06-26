@@ -414,8 +414,8 @@ def _pid(msp, d: DatosDXF, x0=10, y0=230, W=626, H=354):
 
     # Título del diagrama
     _txt(msp, x0+W/2, y0+H-5,
-         "DIAGRAMA ESQUEMATICO P&ID - ESTACION DE MEDICION DE GAS NATURAL",
-         5, P, "CENTER")
+         "DIAGRAMA ESQUEMATICO P&ID - ESTACION DE MEDICION DE GAS NAT.",
+         4.5, P, "CENTER")
     _txt(msp, x0+W/2, y0+H-18,
          f"{d.tipo_punto} / {d.tecnologia_nombre} / {'FISCAL' if d.fiscal else 'CONTROL INTERNO'}",
          3, A, "CENTER")
