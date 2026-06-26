@@ -167,16 +167,24 @@ async def generar_pid_svg(inp: DXFInput):
         stream = io.StringIO(dxf_bytes.decode("utf-8"))
         doc = ezdxf.read(stream)
 
+        import re
         from ezdxf.addons.drawing.properties import LayoutProperties
-        from ezdxf.addons.drawing.layout import Units
         ctx = RenderContext(doc)
         msp = doc.modelspace()
         layout_props = LayoutProperties.from_layout(msp)
         layout_props.set_colors(bg='#ffffff')
         backend = SVGBackend()
         Frontend(ctx, backend).draw_layout(msp, layout_properties=layout_props)
-        page = Page(841, 594, units=Units.mm)  # A1 landscape
+        page = Page(0, 0)
         svg_string = backend.get_string(page)
+
+        # Expandir viewBox 8% para evitar recorte de texto en bordes
+        vb_match = re.search(r'viewBox="([^"]+)"', svg_string)
+        if vb_match:
+            vx, vy, vw, vh = map(float, vb_match.group(1).split())
+            pad_x, pad_y = vw * 0.08, vh * 0.08
+            new_vb = f"{vx - pad_x} {vy - pad_y} {vw + 2*pad_x} {vh + 2*pad_y}"
+            svg_string = svg_string.replace(vb_match.group(0), f'viewBox="{new_vb}"')
 
     except Exception as exc:
         import traceback
