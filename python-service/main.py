@@ -178,10 +178,12 @@ async def generar_pid_svg(inp: DXFInput):
         page = Page(0, 0)
         svg_string = backend.get_string(page)
 
-        # Convertir todos los colores a negro (excepto blanco de fondo)
-        svg_string = re.sub(r'stroke:\s*#(?![Ff][Ff][Ff])[0-9a-fA-F]{6}', 'stroke: #000000', svg_string)
-        svg_string = re.sub(r'fill:\s*#(?![Ff][Ff][Ff])[0-9a-fA-F]{6}', 'fill: #000000', svg_string)
-        svg_string = re.sub(r'color:\s*#(?![Ff][Ff][Ff])[0-9a-fA-F]{6}', 'color: #000000', svg_string)
+        # Convertir todos los colores a negro (excepto blanco y none)
+        svg_string = re.sub(r'stroke:\s*#(?![Ff]{6})[0-9a-fA-F]{3,6}', 'stroke: #000000', svg_string)
+        svg_string = re.sub(r'fill:\s*#(?![Ff]{6})[0-9a-fA-F]{3,6}', 'fill: #000000', svg_string)
+        svg_string = re.sub(r'color:\s*#(?![Ff]{6})[0-9a-fA-F]{3,6}', 'color: #000000', svg_string)
+        svg_string = re.sub(r'stroke="(?!none|white|#[Ff]{6})#[0-9a-fA-F]{3,6}"', 'stroke="#000000"', svg_string)
+        svg_string = re.sub(r'fill="(?!none|white|#[Ff]{6})#[0-9a-fA-F]{3,6}"', 'fill="#000000"', svg_string)
 
         # Expandir viewBox 8% para evitar recorte de texto en bordes
         vb_match = re.search(r'viewBox="([^"]+)"', svg_string)
