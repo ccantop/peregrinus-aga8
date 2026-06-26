@@ -117,7 +117,7 @@ export async function GET(req: NextRequest) {
       console.log('[exportar-paquete] /pid-svg status:', res.status)
       if (res.ok) {
         const svgText = await res.text()
-        pidDxfPng = await sharp(Buffer.from(svgText)).resize(2400).grayscale().png().toBuffer()
+        pidDxfPng = await sharp(Buffer.from(svgText)).resize(4800).png({ compressionLevel: 6 }).toBuffer()
       }
     } catch (err) {
       console.log('[exportar-paquete] /pid-svg error:', err)
