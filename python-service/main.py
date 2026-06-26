@@ -179,6 +179,7 @@ async def generar_pid_svg(inp: DXFInput):
         svg_string = backend.get_string(page)
 
         # Expandir viewBox 8% para evitar recorte de texto en bordes
+        print(f"SVG length: {len(svg_string)}, first 300: {svg_string[:300]}")
         vb_match = re.search(r'viewBox="([^"]+)"', svg_string)
         if vb_match:
             vx, vy, vw, vh = map(float, vb_match.group(1).split())
