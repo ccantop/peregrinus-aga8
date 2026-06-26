@@ -159,6 +159,7 @@ async def generar_pid_svg(inp: DXFInput):
         import ezdxf
         from ezdxf.addons.drawing import RenderContext, Frontend
         from ezdxf.addons.drawing.svg import SVGBackend
+        from ezdxf.addons.drawing.layout import Page
 
         datos = DatosDXF(**inp.model_dump())
         dxf_bytes = crear_dxf(datos)
@@ -169,7 +170,8 @@ async def generar_pid_svg(inp: DXFInput):
         ctx = RenderContext(doc)
         backend = SVGBackend()
         Frontend(ctx, backend).draw_layout(doc.modelspace())
-        svg_string = backend.get_string()
+        page = Page(0, 0)  # auto-size basado en contenido
+        svg_string = backend.get_string(page)
 
     except Exception as exc:
         import traceback
