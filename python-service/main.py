@@ -170,7 +170,7 @@ async def generar_pid_svg(inp: DXFInput):
         ctx = RenderContext(doc)
         backend = SVGBackend()
         Frontend(ctx, backend).draw_layout(doc.modelspace())
-        page = Page(0, 0)  # auto-size basado en contenido
+        page = Page(0, 0)
         svg_string = backend.get_string(page)
 
     except Exception as exc:
