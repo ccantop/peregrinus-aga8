@@ -85,3 +85,4 @@ export function generarPIDSvg(d: PIDSvgData): string {
   <text x="450" y="298" fill="${C.ink3}" font-family="Liberation Mono,DejaVu Sans Mono,monospace" font-size="8" text-anchor="middle">Generado por Peregrin — Ingenieria normativa de estaciones de medicion de gas natural</text>
 </svg>`
 }
+
