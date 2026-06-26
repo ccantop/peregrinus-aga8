@@ -167,9 +167,13 @@ async def generar_pid_svg(inp: DXFInput):
         stream = io.StringIO(dxf_bytes.decode("utf-8"))
         doc = ezdxf.read(stream)
 
+        from ezdxf.addons.drawing.properties import LayoutProperties
         ctx = RenderContext(doc)
+        msp = doc.modelspace()
+        layout_props = LayoutProperties.from_layout(msp)
+        layout_props.set_colors(bg='#ffffff')
         backend = SVGBackend()
-        Frontend(ctx, backend).draw_layout(doc.modelspace())
+        Frontend(ctx, backend).draw_layout(msp, layout_properties=layout_props)
         page = Page(0, 0)
         svg_string = backend.get_string(page)
 
