@@ -168,13 +168,14 @@ async def generar_pid_svg(inp: DXFInput):
         doc = ezdxf.read(stream)
 
         from ezdxf.addons.drawing.properties import LayoutProperties
+        from ezdxf.addons.drawing.layout import Units
         ctx = RenderContext(doc)
         msp = doc.modelspace()
         layout_props = LayoutProperties.from_layout(msp)
         layout_props.set_colors(bg='#ffffff')
         backend = SVGBackend()
         Frontend(ctx, backend).draw_layout(msp, layout_properties=layout_props)
-        page = Page(0, 0)
+        page = Page(841, 594, units=Units.mm)  # A1 landscape
         svg_string = backend.get_string(page)
 
     except Exception as exc:
