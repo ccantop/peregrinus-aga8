@@ -169,7 +169,7 @@ async def generar_pid_svg(inp: DXFInput):
         ctx = RenderContext(doc)
         backend = SVGBackend()
         Frontend(ctx, backend).draw_layout(doc.modelspace())
-        svg_string = backend.get_string(pretty=False)
+        svg_string = backend.get_string()
 
     except Exception as exc:
         import traceback
