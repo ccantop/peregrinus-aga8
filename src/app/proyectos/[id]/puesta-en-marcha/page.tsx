@@ -182,10 +182,7 @@ export default async function PuestaEnMarchaPage({
                   const done = !!checkMap.get(item.key)
                   return (
                     <div key={item.key} className="flex items-start gap-3 px-4 py-3">
-                      <form action={async () => {
-                        'use server'
-                        await toggleItem(id, item.key, !done)
-                      }}>
+                      <form action={toggleItem.bind(null, id, item.key, !done)}>
                         <button type="submit"
                           className="mt-0.5 w-4 h-4 rounded border shrink-0 flex items-center justify-center transition-colors"
                           style={{
