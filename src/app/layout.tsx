@@ -24,19 +24,24 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           className="shrink-0 border-b px-6 py-3 flex items-center justify-between"
           style={{ background: 'var(--panel)', borderColor: 'var(--line)' }}
         >
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-6 flex-1">
             <Link href="/" className="flex items-center gap-2.5 shrink-0">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo.png" alt="Peregrin" width={36} height={36} style={{ objectFit: 'contain' }} />
-              <span
-                className="text-sm font-semibold tracking-widest uppercase hidden sm:block"
-                style={{ color: 'var(--ink)', letterSpacing: '0.12em' }}
-              >
-                Peregrin
-              </span>
+              <img src="/logo.png" alt="PEREGRIN" width={36} height={36} style={{ objectFit: 'contain' }} />
+              <div className="hidden sm:flex flex-col leading-none">
+                <span
+                  className="text-sm font-semibold tracking-widest uppercase"
+                  style={{ color: 'var(--ink)', letterSpacing: '0.15em' }}
+                >
+                  PEREGRIN
+                </span>
+                <span className="text-[9px] tracking-wide mt-0.5" style={{ color: 'var(--ink3)', letterSpacing: '0.05em' }}>
+                  Gas Engineering &amp; Construction Experts
+                </span>
+              </div>
             </Link>
             {user && (
-              <nav className="flex items-center gap-1">
+              <nav className="flex items-center gap-1 ml-auto">
                 <Link
                   href="/"
                   className="text-xs px-3 py-1.5 rounded transition-colors hover:bg-[#eef4f7]"

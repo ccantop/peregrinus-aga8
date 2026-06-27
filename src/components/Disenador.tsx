@@ -229,7 +229,7 @@ export default function Disenador({ initialData }: { initialData?: InitialData |
     <>
     <div className="max-w-[1260px] mx-auto px-6 pb-20 pt-7">
 
-      <h1 className="text-xl font-semibold mb-0.5">Diseñador de estación de medición de gas</h1>
+      <h1 className="text-xl font-semibold mb-0.5">Gas measurement engineering</h1>
       <p className="text-xs font-mono mb-5" style={{ color: 'var(--ink3)' }}>
         Fase 1 — condiciones de proceso · NOM-020-ASEA-2024
       </p>
