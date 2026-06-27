@@ -28,8 +28,9 @@ export default function PID({ tech, diametro, presion, qnorm }: PIDProps) {
       className="w-full h-auto rounded-md"
       style={{ background: '#0a0c09' }}
     >
-      {/* línea de tubería */}
-      <line x1="20" y1="140" x2="870" y2="140" stroke={C.pipe} strokeWidth="3" />
+      {/* línea de tubería (en dos segmentos para no cruzar el elemento primario) */}
+      <line x1="20" y1="140" x2="395" y2="140" stroke={C.pipe} strokeWidth="3" />
+      <line x1="515" y1="140" x2="870" y2="140" stroke={C.pipe} strokeWidth="3" />
 
       {/* header */}
       <text x="20" y="22" fill={C.ink3} fontFamily="monospace" fontSize="11">
