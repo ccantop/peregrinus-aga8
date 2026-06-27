@@ -266,6 +266,18 @@ export interface DatosMemoria {
     densidad_kgm3: number
     composicion: Record<string, number>
   } | null
+  aga7?: {
+    Fpv: number
+    Zf: number
+    Zb: number
+    qb_min: number
+    qb_norm: number
+    qb_max: number
+    Pf_kpa: number
+    Pb_kpa: number
+    Tf_k: number
+    Tb_k: number
+  } | null
   calculo: {
     Z_papay: number
     Tr: number
@@ -279,7 +291,7 @@ export interface DatosMemoria {
 // ─── documento ───────────────────────────────────────────────────────────────
 
 export function MemoriaCalculoPDF({ d }: { d: DatosMemoria }) {
-  const { proyecto, f1, aga8, calculo } = d
+  const { proyecto, f1, aga8, aga7, calculo } = d
   const fecha = new Date(proyecto.creado_en).toLocaleDateString('es-MX', {
     day: '2-digit', month: 'long', year: 'numeric',
   })
@@ -563,8 +575,49 @@ export function MemoriaCalculoPDF({ d }: { d: DatosMemoria }) {
         </View>
         <View style={s.divider} />
 
-        {/* 5. Tecnología */}
-        <Text style={s.secNum}>5.</Text>
+        {/* 5. AGA 7 — Conversión a condiciones base */}
+        {aga7 && (
+          <>
+            <Text style={s.secNum}>5.</Text>
+            <Text style={s.secTitle}>Cálculo de caudal en condiciones base — AGA 7</Text>
+            <Text style={s.body}>
+              El medidor volumétrico registra el caudal en condiciones de operación (Qt). La corrección a
+              condiciones base (facturación) se realiza mediante la ecuación AGA Report No. 7 (2006):{'\n'}
+              Qb = Qt × (Pf/Pb) × (Tb/Tf) × (Zb/Zf) = Qt × Fpv²
+            </Text>
+            <View style={s.tbl}>
+              <Row2 l1="Presión de flujo (Pf)" v1={`${aga7.Pf_kpa} kPa abs`}
+                    l2="Presión base (Pb)"     v2={`${aga7.Pb_kpa} kPa`} />
+              <Row2 l1="Temp. de flujo (Tf)"   v1={`${aga7.Tf_k} K (${(aga7.Tf_k - 273.15).toFixed(1)} °C)`}
+                    l2="Temp. base (Tb)"        v2={`${aga7.Tb_k} K (${(aga7.Tb_k - 273.15).toFixed(1)} °C)`} />
+              <Row2 l1="Z flujo (Zf)"           v1={aga7.Zf.toFixed(5)}
+                    l2="Z base (Zb)"            v2={aga7.Zb.toFixed(5)} />
+              <Row2 l1="Factor Fpv"             v1={aga7.Fpv.toFixed(4)}
+                    l2="Fpv²"                   v2={(aga7.Fpv * aga7.Fpv).toFixed(4)} last />
+            </View>
+            <View style={[s.aga8Box, { marginBottom: 6 }]}>
+              <Text style={s.aga8Tag}>Caudales corregidos a condiciones base</Text>
+              <View style={s.tbl}>
+                <Row2 l1="Qb mínimo"  v1={`${aga7.qb_min.toLocaleString('es-MX')} m³/h`}
+                      l2="Qt mínimo"  v2={`${Number(f1.qmin).toLocaleString('es-MX')} m³/h`} />
+                <Row2 l1="Qb normal"  v1={`${aga7.qb_norm.toLocaleString('es-MX')} m³/h`}
+                      l2="Qt normal"  v2={`${Number(f1.qnorm).toLocaleString('es-MX')} m³/h`} />
+                <Row2 l1="Qb máximo"  v1={`${aga7.qb_max.toLocaleString('es-MX')} m³/h`}
+                      l2="Qt máximo"  v2={`${Number(f1.qmax).toLocaleString('es-MX')} m³/h`} last />
+              </View>
+              <Text style={[s.body, { marginTop: 3, marginBottom: 0 }]}>
+                {`Qb/Qt = ${(aga7.qb_norm / Number(f1.qnorm)).toFixed(4)} — por cada m³ medido en condiciones de operación, `}
+                {`se facturan ${(aga7.qb_norm / Number(f1.qnorm)).toFixed(4)} m³ en condiciones base.`}
+              </Text>
+            </View>
+            <Text style={[s.body, { fontSize: 7, color: C.ink3 }]}>
+              Zf calculado con {aga8 ? 'AGA 8 DETAIL (pyaga8)' : 'correlación de Papay (screening)'}. Zb calculado con Papay a condiciones base (101 kPa, 15.6 °C). Para cómputo fiscal se requiere AGA 8 DETAIL en ambas condiciones.
+            </Text>
+          </>
+        )}
+
+        {/* 6. Tecnología */}
+        <Text style={s.secNum}>{aga7 ? '6.' : '5.'}</Text>
         <Text style={s.secTitle}>Selección de tecnología de medición</Text>
         <View style={s.techBox}>
           <Text style={s.techNom}>{f1.tecnologia_nombre ?? 'Por definir'}</Text>
@@ -594,7 +647,7 @@ export function MemoriaCalculoPDF({ d }: { d: DatosMemoria }) {
         </Text>
 
         {/* 6. Normas */}
-        <Text style={[s.secNum, { marginTop: 4 }]}>6.</Text>
+        <Text style={[s.secNum, { marginTop: 4 }]}>{aga7 ? '7.' : '6.'}</Text>
         <Text style={s.secTitle}>Marco normativo aplicable</Text>
         {normas.map((n, i) => (
           <View key={i} style={s.normRow}>
@@ -603,8 +656,8 @@ export function MemoriaCalculoPDF({ d }: { d: DatosMemoria }) {
           </View>
         ))}
 
-        {/* 7. Conclusiones */}
-        <Text style={[s.secNum, { marginTop: 6 }]}>7.</Text>
+        {/* Conclusiones */}
+        <Text style={[s.secNum, { marginTop: 6 }]}>{aga7 ? '8.' : '7.'}</Text>
         <Text style={s.secTitle}>Conclusiones y próximos pasos</Text>
         <Text style={s.body}>
           Con base en los datos de proceso ingresados, se determina que la tecnología de medición

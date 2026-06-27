@@ -6,7 +6,7 @@ import sharp from 'sharp'
 import { createClient } from '@/lib/supabase/server'
 import { MemoriaCalculoPDF, type DatosMemoria } from '@/lib/pdf/memoria-calculo-pdf'
 import { ReportePDF } from '@/lib/pdf/reporte-pdf'
-import { calcularCondicionesFisicas } from '@/lib/engine/calculo-z'
+import { calcularCondicionesFisicas, calcularAGA7 } from '@/lib/engine/calculo-z'
 import { generarPIDSvg } from '@/lib/pdf/pid-svg'
 
 const _aga8Raw = process.env.AGA8_SERVICE_URL
@@ -65,9 +65,15 @@ export async function GET(req: NextRequest) {
     t_base_c: Number(f1.t_base_c ?? 15.6),
   }
   const calculo = calcularCondicionesFisicas(vars)
+  const aga7 = calcularAGA7(
+    Number(f1.qmin), Number(f1.qnorm), Number(f1.qmax),
+    Number(f1.presion_kgcm2), Number(f1.tamb_min_c ?? 20),
+    Number(f1.p_base_kpa ?? 101.325), Number(f1.t_base_c ?? 15.6),
+    aga8?.z ?? calculo.Z_papay,
+  )
 
   const dMemoria: DatosMemoria = {
-    proyecto, f1, aga8,
+    proyecto, f1, aga8, aga7,
     calculo: {
       Z_papay: calculo.Z_papay,
       Tr: calculo.Tr,

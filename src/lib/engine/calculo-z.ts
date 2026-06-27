@@ -77,6 +77,59 @@ export function calcularCondicionesFisicas(vars: VariablesAvanzadas): ResultadoC
   }
 }
 
+// ─── AGA 7 — Conversión a condiciones base (turbina / cualquier medidor volumétrico) ──
+
+export interface ResultadoAGA7 {
+  Fpv: number           // factor de supercompresibilidad
+  Zf: number            // Z en condiciones de flujo
+  Zb: number            // Z en condiciones base (~1 a baja presión)
+  qb_min: number        // caudal mínimo en condiciones base (m³/h)
+  qb_norm: number       // caudal normal en condiciones base (m³/h)
+  qb_max: number        // caudal máximo en condiciones base (m³/h)
+  Pf_kpa: number        // presión de flujo absoluta (kPa)
+  Pb_kpa: number        // presión base (kPa)
+  Tf_k: number          // temperatura de flujo (K)
+  Tb_k: number          // temperatura base (K)
+}
+
+/**
+ * Cálculo AGA 7 simplificado: conversión de caudal operativo a condiciones base.
+ * Fórmula: Qb = Qt × (Pf/Pb) × (Tb/Tf) × (Zb/Zf)
+ * Ref: AGA Report No. 7 (2006), sección 5.
+ */
+export function calcularAGA7(
+  qmin: number, qnorm: number, qmax: number,
+  presion_kgcm2: number, tamb_c: number,
+  p_base_kpa: number, t_base_c: number,
+  Zf: number,   // Z en condiciones de flujo (de AGA 8 o Papay)
+): ResultadoAGA7 {
+  const Pf_kpa = presion_kgcm2 * 98.0665 + 101.325   // gauge → absoluta
+  const Pb_kpa = p_base_kpa
+  const Tf_k   = tamb_c + 273.15
+  const Tb_k   = t_base_c + 273.15
+
+  // Z en condiciones base (101 kPa, ~15°C): muy cercano a 1 para gas natural
+  const Zb = papay(0.65, Pb_kpa, t_base_c).Z   // SG nominal para base
+
+  // Factor de supercompresibilidad (AGA 7 eq. 5-1)
+  const Fpv = Math.sqrt((Zb / Zf) * (Pf_kpa / Pb_kpa) * (Tb_k / Tf_k))
+
+  const factor = (Pf_kpa / Pb_kpa) * (Tb_k / Tf_k) * (Zb / Zf)
+
+  return {
+    Fpv: Math.round(Fpv * 10000) / 10000,
+    Zf,
+    Zb: Math.round(Zb * 10000) / 10000,
+    qb_min:  Math.round(qmin  * factor * 10) / 10,
+    qb_norm: Math.round(qnorm * factor * 10) / 10,
+    qb_max:  Math.round(qmax  * factor * 10) / 10,
+    Pf_kpa:  Math.round(Pf_kpa * 10) / 10,
+    Pb_kpa,
+    Tf_k:    Math.round(Tf_k * 10) / 10,
+    Tb_k:    Math.round(Tb_k * 10) / 10,
+  }
+}
+
 // ─── AGA 8 DETAIL — llamada al servicio Python ────────────────────────────────
 
 export interface RespuestaAGA8 {
