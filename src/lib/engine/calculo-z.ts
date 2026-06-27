@@ -130,6 +130,40 @@ export function calcularAGA7(
   }
 }
 
+// ─── Tabla ID real ASME B36.10M (diámetro interno en mm, Schedule 40 / STD) ────
+// Fuente: ASME B36.10M-2018, Tabla 1. Usado para AGA 3 en lugar del OD nominal.
+const ID_SCH40_MM: Record<number, number> = {
+  0.5:  15.80,
+  0.75: 20.93,
+  1:    26.64,
+  1.25: 35.05,
+  1.5:  40.89,
+  2:    52.50,
+  2.5:  62.71,
+  3:    77.93,
+  4:   102.26,
+  6:   154.05,
+  8:   202.72,
+  10:  254.51,
+  12:  303.23,
+  14:  333.35,
+  16:  381.00,
+  18:  428.65,
+  20:  477.82,
+  24:  574.65,
+}
+
+/** Devuelve el ID real (mm) para un diámetro nominal en pulgadas, Sch 40.
+ *  Si el diámetro no está en tabla usa d_nominal × 25.4 como fallback. */
+export function idRealMm(diametro_pulg: number): number {
+  // buscar coincidencia exacta o el más cercano
+  const keys = Object.keys(ID_SCH40_MM).map(Number)
+  const exact = ID_SCH40_MM[diametro_pulg]
+  if (exact !== undefined) return exact
+  // fallback: nominal × 25.4 (sin corrección de pared)
+  return diametro_pulg * 25.4
+}
+
 // ─── AGA 3 — Dimensionamiento de placa de orificio (ISO 5167 / AGA Report No. 3) ──
 
 export interface ResultadoAGA3 {
@@ -185,8 +219,8 @@ export function calcularAGA3(
   const rho = (sg * 28.97 * Pf_kpa) / (Zf * 8.31446 * Tf_k)
   const mu  = viscosidad_cp * 1e-3  // Pa·s
 
-  const D_m  = diametro_pulg * 0.0254
-  const D_mm = D_m * 1000
+  const D_mm = idRealMm(diametro_pulg)   // ID real Sch 40 (ASME B36.10M)
+  const D_m  = D_mm / 1000
   const A_D  = Math.PI / 4 * D_m * D_m
 
   // Parámetros toma (Reader-Harris/Gallagher)

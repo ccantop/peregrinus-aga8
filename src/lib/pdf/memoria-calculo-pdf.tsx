@@ -687,8 +687,8 @@ export function MemoriaCalculoPDF({ d }: { d: DatosMemoria }) {
               </View>
             )}
             <Text style={[s.body, { fontSize: 7, color: C.ink3, marginBottom: 4 }]}>
-              Cálculo preliminar (screening). El diámetro del orificio debe verificarse con el ID real de la tubería (schedule de pared)
-              y con la composición exacta del gas. Para custodia fiscal, el cálculo debe realizarse con la ecuación completa AGA 3 Part 2 (campo) y AGA 8 DETAIL.
+              Diámetro interno (D) tomado de tabla ASME B36.10M Schedule 40. Si el proyecto usa otro schedule o material, el β real diferirá.
+              Para custodia fiscal, el cálculo debe realizarse con el ID medido en campo y la ecuación completa AGA 3 Part 2 + AGA 8 DETAIL.
             </Text>
           </>
         )}
