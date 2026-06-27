@@ -93,6 +93,13 @@ export default async function ProyectoDetallePage({
           >
             Hojas de datos
           </Link>
+          <Link
+            href={`/proyectos/${proyecto.id}/puesta-en-marcha`}
+            className="rounded-md px-4 py-2 text-sm transition-colors hover:bg-[#eef4f7]"
+            style={{ border: '1px solid var(--line)', color: 'var(--ink2)' }}
+          >
+            Puesta en marcha
+          </Link>
 
           {/* — separador visual — */}
           <span className="self-stretch w-px mx-1" style={{ background: 'var(--line)' }} />
@@ -175,7 +182,7 @@ export default async function ProyectoDetallePage({
           {
             n: '05', label: 'Puesta en marcha', desc: 'UV · ASEA · CENAGAS',
             done: false, active: false,
-            href: undefined,
+            href: `/proyectos/${proyecto.id}/puesta-en-marcha`,
           },
         ]
 
