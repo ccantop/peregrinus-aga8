@@ -15,7 +15,6 @@ const AGA8_URL = _aga8Raw
   : undefined
 
 export async function GET(req: NextRequest) {
-  console.log('[exportar-paquete] AGA8_URL:', AGA8_URL)
   const id = req.nextUrl.searchParams.get('id')
   if (!id) return NextResponse.json({ error: 'id requerido' }, { status: 400 })
 
@@ -120,7 +119,6 @@ export async function GET(req: NextRequest) {
         }),
         signal: AbortSignal.timeout(20_000),
       })
-      console.log('[exportar-paquete] /pid-svg status:', res.status)
       if (res.ok) {
         const svgText = await res.text()
         pidDxfPng = await sharp(Buffer.from(svgText))
@@ -129,7 +127,6 @@ export async function GET(req: NextRequest) {
           .toBuffer()
       }
     } catch (err) {
-      console.log('[exportar-paquete] /pid-svg error:', err)
     }
   }
 

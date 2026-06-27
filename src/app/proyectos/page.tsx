@@ -16,7 +16,8 @@ export default async function ProyectosPage() {
     .select(`
       id, nombre, cliente, tipo_punto, fase_actual, creado_en,
       fase1_datos ( tecnologia_nombre, fiscal, qmax ),
-      actividades ( estado, bloquea_exportacion_final )
+      actividades ( estado, bloquea_exportacion_final ),
+      puesta_en_marcha ( completado )
     `)
     .order('creado_en', { ascending: false })
 
@@ -64,6 +65,9 @@ export default async function ProyectosPage() {
             } | null
             const acts = Array.isArray(p.actividades) ? p.actividades as { estado: string; bloquea_exportacion_final: boolean }[] : []
             const huecos = acts.filter(a => a.bloquea_exportacion_final && a.estado === 'falta').length
+            const pem = Array.isArray(p.puesta_en_marcha) ? p.puesta_en_marcha as { completado: boolean }[] : []
+            const pemTotal = pem.length
+            const pemDone = pem.filter(c => c.completado).length
             const fecha = new Date(p.creado_en).toLocaleDateString('es-MX', {
               day: '2-digit', month: 'short', year: 'numeric',
             })
@@ -116,6 +120,26 @@ export default async function ProyectosPage() {
                     )}
                   </div>
                 </div>
+
+                {/* semáforo puesta en marcha */}
+                {pemTotal > 0 && (
+                  <div className="shrink-0 flex flex-col items-center gap-1" title={`Puesta en marcha: ${pemDone}/${pemTotal}`}>
+                    <div className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold"
+                      style={{
+                        background: pemDone === pemTotal
+                          ? 'rgba(34,197,94,0.15)'
+                          : pemDone > 0 ? 'rgba(234,179,8,0.15)' : 'rgba(107,114,128,0.10)',
+                        color: pemDone === pemTotal
+                          ? '#16a34a'
+                          : pemDone > 0 ? '#ca8a04' : 'var(--ink3)',
+                        border: `1px solid ${pemDone === pemTotal ? 'rgba(34,197,94,0.4)' : pemDone > 0 ? 'rgba(234,179,8,0.4)' : 'var(--line)'}`,
+                      }}
+                    >
+                      {pemDone === pemTotal ? '✓' : `${Math.round(pemDone / pemTotal * 100)}%`}
+                    </div>
+                    <span className="text-[9px] font-mono" style={{ color: 'var(--ink3)' }}>PM</span>
+                  </div>
+                )}
 
                 {/* fecha + fase + flecha */}
                 <div className="shrink-0 text-right flex flex-col gap-1">
