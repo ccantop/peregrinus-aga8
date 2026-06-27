@@ -187,6 +187,102 @@ export default function GuiaPage() {
         ))}
       </div>
 
+      {/* Métodos de cálculo */}
+      <h2 className="text-base font-semibold mb-5" style={{ color: 'var(--ink)' }}>
+        Métodos de cálculo: AGA 8 y AGA 7
+      </h2>
+
+      <div className="rounded-lg border mb-6 overflow-hidden" style={{ borderColor: 'var(--line)' }}>
+        {/* AGA 8 */}
+        <div className="p-5 border-b" style={{ borderColor: 'var(--line)', background: 'rgba(74,158,187,0.05)' }}>
+          <div className="flex items-center gap-3 mb-3">
+            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded"
+              style={{ background: 'rgba(74,158,187,0.15)', color: 'var(--accent)', border: '1px solid rgba(74,158,187,0.3)' }}>
+              AGA 8 DETAIL
+            </span>
+            <span className="text-sm font-semibold" style={{ color: 'var(--ink)' }}>
+              Factor de compresibilidad Z — comportamiento del gas real
+            </span>
+          </div>
+          <p className="text-xs leading-relaxed mb-3" style={{ color: 'var(--ink2)' }}>
+            El gas natural no se comporta como gas ideal: a alta presión y baja temperatura,
+            las moléculas interactúan entre sí. El <strong style={{ color: 'var(--ink)' }}>factor Z</strong> cuantifica esa desviación.
+            Un gas ideal tiene Z = 1; el gas natural en condiciones típicas de operación tiene Z ≈ 0.85–0.95.
+          </p>
+          <p className="text-xs leading-relaxed mb-3" style={{ color: 'var(--ink2)' }}>
+            <strong style={{ color: 'var(--ink)' }}>AGA Report No. 8</strong> (implementado en Peregrin mediante la librería <em>pyaga8</em>) calcula Z
+            a partir de la composición del gas, la presión y la temperatura usando la ecuación de estado
+            GERG-2008. NOM-020-ASEA-2024 exige este método para medición fiscal.
+          </p>
+          <div className="rounded px-3 py-2 text-xs font-mono" style={{ background: 'var(--panel)', color: 'var(--ink2)', border: '1px solid var(--line)' }}>
+            PV = nZRT &nbsp;→&nbsp; Z = PV / (nRT) &nbsp;→&nbsp; si Z &lt; 1, el gas ocupa menos volumen del esperado
+          </div>
+        </div>
+
+        {/* AGA 7 */}
+        <div className="p-5 border-b" style={{ borderColor: 'var(--line)', background: 'rgba(45,140,78,0.04)' }}>
+          <div className="flex items-center gap-3 mb-3">
+            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded"
+              style={{ background: 'rgba(45,140,78,0.12)', color: '#2d8c4e', border: '1px solid rgba(45,140,78,0.3)' }}>
+              AGA 7
+            </span>
+            <span className="text-sm font-semibold" style={{ color: 'var(--ink)' }}>
+              Conversión a condiciones base — lo que se factura
+            </span>
+          </div>
+          <p className="text-xs leading-relaxed mb-3" style={{ color: 'var(--ink2)' }}>
+            El medidor de turbina mide el volumen del gas <strong style={{ color: 'var(--ink)' }}>en condiciones de operación</strong> (alta presión,
+            temperatura real del sitio). Pero los contratos de gas se facturan en <strong style={{ color: 'var(--ink)' }}>condiciones base</strong>
+            {' '}(101.325 kPa y 15.6 °C). Un m³ a 50 kg/cm² vale mucho más que un m³ a presión atmosférica.
+          </p>
+          <p className="text-xs leading-relaxed mb-3" style={{ color: 'var(--ink2)' }}>
+            <strong style={{ color: 'var(--ink)' }}>AGA Report No. 7</strong> define la ecuación de corrección para medidores volumétricos (turbina,
+            ultrasónico, orificio). Usa el Z calculado por AGA 8 para ambas condiciones:
+          </p>
+          <div className="rounded px-3 py-2 text-xs font-mono mb-3" style={{ background: 'var(--panel)', color: 'var(--ink2)', border: '1px solid var(--line)' }}>
+            Qb = Qt × (Pf / Pb) × (Tb / Tf) × (Zb / Zf)
+          </div>
+          <ul className="text-xs leading-relaxed space-y-1" style={{ color: 'var(--ink2)' }}>
+            <li><span className="font-mono font-semibold" style={{ color: 'var(--ink)' }}>Qt</span> — caudal que mide la turbina (condiciones de operación)</li>
+            <li><span className="font-mono font-semibold" style={{ color: 'var(--ink)' }}>Qb</span> — caudal que se factura (condiciones base)</li>
+            <li><span className="font-mono font-semibold" style={{ color: 'var(--ink)' }}>Pf / Pb</span> — relación de presiones: operación vs base (101.325 kPa)</li>
+            <li><span className="font-mono font-semibold" style={{ color: 'var(--ink)' }}>Tb / Tf</span> — relación de temperaturas: base (288.75 K) vs operación</li>
+            <li><span className="font-mono font-semibold" style={{ color: 'var(--ink)' }}>Zb / Zf</span> — corrección por no-idealidad: Z en base entre Z en operación</li>
+          </ul>
+        </div>
+
+        {/* Relación entre ambos */}
+        <div className="p-5" style={{ background: 'rgba(193,127,36,0.04)' }}>
+          <div className="flex items-center gap-3 mb-3">
+            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded"
+              style={{ background: 'rgba(193,127,36,0.12)', color: '#c17f24', border: '1px solid rgba(193,127,36,0.3)' }}>
+              RELACIÓN
+            </span>
+            <span className="text-sm font-semibold" style={{ color: 'var(--ink)' }}>
+              Cómo trabajan juntos en Peregrin
+            </span>
+          </div>
+          <div className="flex flex-col gap-2 text-xs" style={{ color: 'var(--ink2)' }}>
+            <div className="flex gap-3 items-start">
+              <span className="font-mono text-[10px] mt-0.5 shrink-0" style={{ color: 'var(--accent)' }}>1.</span>
+              <span>El servicio Python (<em>pyaga8</em>) calcula <strong style={{ color: 'var(--ink)' }}>Z con AGA 8</strong> a partir de SG, CO₂, N₂, presión y temperatura de operación.</span>
+            </div>
+            <div className="flex gap-3 items-start">
+              <span className="font-mono text-[10px] mt-0.5 shrink-0" style={{ color: 'var(--accent)' }}>2.</span>
+              <span>Ese Z se usa como insumo en la ecuación <strong style={{ color: 'var(--ink)' }}>AGA 7</strong> para calcular el factor Fpv (supercompresibilidad) y los caudales corregidos a condiciones base.</span>
+            </div>
+            <div className="flex gap-3 items-start">
+              <span className="font-mono text-[10px] mt-0.5 shrink-0" style={{ color: 'var(--accent)' }}>3.</span>
+              <span>La <strong style={{ color: 'var(--ink)' }}>memoria de cálculo</strong> muestra ambos resultados: Z de AGA 8 en la sección de propiedades físicas, y Qb de AGA 7 en la sección de conversión a condiciones base.</span>
+            </div>
+            <div className="flex gap-3 items-start">
+              <span className="font-mono text-[10px] mt-0.5 shrink-0" style={{ color: '#c17f24' }}>⚠</span>
+              <span>Si el servicio Python no responde, Peregrin usa la correlación de <strong style={{ color: 'var(--ink)' }}>Papay</strong> como respaldo para Z. Es válida solo para screening preliminar — no para cómputo fiscal.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Glosario */}
       <h2 className="text-base font-semibold mb-2" style={{ color: 'var(--ink)' }}>
         Glosario de acrónimos y organismos

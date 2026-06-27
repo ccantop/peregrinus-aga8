@@ -581,9 +581,18 @@ export function MemoriaCalculoPDF({ d }: { d: DatosMemoria }) {
             <Text style={s.secNum}>5.</Text>
             <Text style={s.secTitle}>Cálculo de caudal en condiciones base — AGA 7</Text>
             <Text style={s.body}>
-              El medidor volumétrico registra el caudal en condiciones de operación (Qt). La corrección a
-              condiciones base (facturación) se realiza mediante la ecuación AGA Report No. 7 (2006):{'\n'}
-              Qb = Qt × (Pf/Pb) × (Tb/Tf) × (Zb/Zf) = Qt × Fpv²
+              El medidor volumétrico (turbina, ultrasónico u orificio) registra el caudal Qt en
+              condiciones de operación — alta presión y temperatura real del sitio. Los contratos
+              de gas se facturan en condiciones base (101.325 kPa y 15.6 °C), donde un m³ tiene
+              menor densidad. La corrección se realiza con la ecuación AGA Report No. 7 (2006):
+            </Text>
+            <Text style={[s.body, { fontFamily: 'Helvetica-Bold', color: C.accent, marginLeft: 10 }]}>
+              Qb = Qt × (Pf/Pb) × (Tb/Tf) × (Zb/Zf)
+            </Text>
+            <Text style={[s.body, { marginBottom: 5 }]}>
+              El factor Z en condiciones de flujo (Zf) proviene de AGA 8 DETAIL (pyaga8); el Z en
+              condiciones base (Zb) se calcula a baja presión donde el gas es casi ideal. La relación
+              Zb/Zf completa la corrección de no-idealidad del gas real.
             </Text>
             <View style={s.tbl}>
               <Row2 l1="Presión de flujo (Pf)" v1={`${aga7.Pf_kpa} kPa abs`}
