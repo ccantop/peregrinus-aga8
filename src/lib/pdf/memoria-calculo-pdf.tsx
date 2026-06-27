@@ -278,6 +278,22 @@ export interface DatosMemoria {
     Tf_k: number
     Tb_k: number
   } | null
+  aga3?: {
+    D_mm: number
+    d_mm: number
+    beta: number
+    Cd: number
+    Ev: number
+    dp_max_mbar: number
+    dp_norm_mbar: number
+    dp_min_mbar: number
+    rho_kgm3: number
+    Re_D_max: number
+    toma: string
+    valido: boolean
+    alerta?: string
+    dp_objetivo_mbar: number
+  } | null
   calculo: {
     Z_papay: number
     Tr: number
@@ -291,7 +307,7 @@ export interface DatosMemoria {
 // ─── documento ───────────────────────────────────────────────────────────────
 
 export function MemoriaCalculoPDF({ d }: { d: DatosMemoria }) {
-  const { proyecto, f1, aga8, aga7, calculo } = d
+  const { proyecto, f1, aga8, aga7, aga3, calculo } = d
   const fecha = new Date(proyecto.creado_en).toLocaleDateString('es-MX', {
     day: '2-digit', month: 'long', year: 'numeric',
   })
@@ -625,8 +641,60 @@ export function MemoriaCalculoPDF({ d }: { d: DatosMemoria }) {
           </>
         )}
 
-        {/* 6. Tecnología */}
-        <Text style={s.secNum}>{aga7 ? '6.' : '5.'}</Text>
+        {/* AGA 3 — sólo para placa de orificio */}
+        {aga3 && (
+          <>
+            <Text style={s.secNum}>{aga7 ? '6.' : '5.'}</Text>
+            <Text style={s.secTitle}>Dimensionamiento de placa de orificio — AGA 3 / ISO 5167</Text>
+            <Text style={s.body}>
+              La placa de orificio es un elemento de restricción que genera una presión diferencial ΔP proporcional al cuadrado del caudal.
+              El diámetro del orificio (d) se selecciona para que a caudal máximo la presión diferencial sea igual al rango del transmisor elegido.
+              La relación β = d/D debe estar entre 0.20 y 0.75 para que sea válida la ecuación de descarga Reader-Harris/Gallagher (AGA 3 Part 1, §2.4).
+            </Text>
+            <View style={s.tbl}>
+              <View style={[s.tRow, s.tHdr]}>
+                <Text style={[s.tLbl, { fontFamily: 'Helvetica-Bold', color: C.ink }]}>Parámetro</Text>
+                <Text style={[s.tVal, { fontFamily: 'Helvetica-Bold', color: C.ink }]}>Valor</Text>
+                <Text style={[s.tLbl2, { fontFamily: 'Helvetica-Bold', color: C.ink }]}>Parámetro</Text>
+                <Text style={[s.tVal2, { fontFamily: 'Helvetica-Bold', color: C.ink }]}>Valor</Text>
+              </View>
+              <Row2 l1="Diám. tubería (D)" v1={`${aga3.D_mm} mm (${f1.diametro_pulg}")`}
+                    l2="Diám. orificio (d)" v2={`${aga3.d_mm} mm`} />
+              <Row2 l1="Relación β = d/D"  v1={aga3.beta.toFixed(4)}
+                    l2="Coef. descarga Cd" v2={aga3.Cd.toFixed(4)} />
+              <Row2 l1="Factor Ev"          v1={aga3.Ev.toFixed(4)}
+                    l2="Tipo de toma"       v2={aga3.toma} />
+              <Row2 l1="Densidad flujo"     v1={`${aga3.rho_kgm3} kg/m³`}
+                    l2="Re tubería (Qmax)"  v2={aga3.Re_D_max.toLocaleString('es-MX')} last />
+            </View>
+            <View style={[s.aga8Box, { marginBottom: 6 }]}>
+              <Text style={s.aga8Tag}>Presión diferencial por punto de operación</Text>
+              <Text style={[s.body, { marginBottom: 4, marginTop: 2 }]}>
+                ΔP objetivo a Qmax: {aga3.dp_objetivo_mbar} mbar (rango del transmisor diferencial)
+              </Text>
+              <View style={s.tbl}>
+                <Row2 l1="ΔP a Qmáx"  v1={`${aga3.dp_max_mbar} mbar`}
+                      l2="Qmáx"       v2={`${Number(f1.qmax).toLocaleString('es-MX')} m³/h (base)`} />
+                <Row2 l1="ΔP a Qnorm" v1={`${aga3.dp_norm_mbar} mbar`}
+                      l2="Qnorm"      v2={`${Number(f1.qnorm).toLocaleString('es-MX')} m³/h (base)`} />
+                <Row2 l1="ΔP a Qmín"  v1={`${aga3.dp_min_mbar} mbar`}
+                      l2="Qmín"       v2={`${Number(f1.qmin).toLocaleString('es-MX')} m³/h (base)`} last />
+              </View>
+            </View>
+            {aga3.alerta && (
+              <View style={[s.alertBox, { backgroundColor: 'rgba(193,127,36,0.08)', borderWidth: 1, borderColor: 'rgba(193,127,36,0.3)' }]}>
+                <Text style={[s.alertTxt, { color: C.warn }]}>⚠ {aga3.alerta}</Text>
+              </View>
+            )}
+            <Text style={[s.body, { fontSize: 7, color: C.ink3, marginBottom: 4 }]}>
+              Cálculo preliminar (screening). El diámetro del orificio debe verificarse con el ID real de la tubería (schedule de pared)
+              y con la composición exacta del gas. Para custodia fiscal, el cálculo debe realizarse con la ecuación completa AGA 3 Part 2 (campo) y AGA 8 DETAIL.
+            </Text>
+          </>
+        )}
+
+        {/* Tecnología */}
+        <Text style={s.secNum}>{[aga7, aga3].filter(Boolean).length === 2 ? '7.' : [aga7, aga3].some(Boolean) ? '6.' : '5.'}</Text>
         <Text style={s.secTitle}>Selección de tecnología de medición</Text>
         <View style={s.techBox}>
           <Text style={s.techNom}>{f1.tecnologia_nombre ?? 'Por definir'}</Text>
@@ -655,8 +723,11 @@ export function MemoriaCalculoPDF({ d }: { d: DatosMemoria }) {
           No fiscal + TD &gt; 20:1 → Diafragma  |  Default → Ultrasónico.
         </Text>
 
-        {/* 6. Normas */}
-        <Text style={[s.secNum, { marginTop: 4 }]}>{aga7 ? '7.' : '6.'}</Text>
+        {/* Normas */}
+        <Text style={[s.secNum, { marginTop: 4 }]}>{
+          [aga7, aga3].filter(Boolean).length === 2 ? '8.' :
+          [aga7, aga3].some(Boolean) ? '7.' : '6.'
+        }</Text>
         <Text style={s.secTitle}>Marco normativo aplicable</Text>
         {normas.map((n, i) => (
           <View key={i} style={s.normRow}>
@@ -666,7 +737,10 @@ export function MemoriaCalculoPDF({ d }: { d: DatosMemoria }) {
         ))}
 
         {/* Conclusiones */}
-        <Text style={[s.secNum, { marginTop: 6 }]}>{aga7 ? '8.' : '7.'}</Text>
+        <Text style={[s.secNum, { marginTop: 6 }]}>{
+          [aga7, aga3].filter(Boolean).length === 2 ? '9.' :
+          [aga7, aga3].some(Boolean) ? '8.' : '7.'
+        }</Text>
         <Text style={s.secTitle}>Conclusiones y próximos pasos</Text>
         <Text style={s.body}>
           Con base en los datos de proceso ingresados, se determina que la tecnología de medición

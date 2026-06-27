@@ -130,6 +130,143 @@ export function calcularAGA7(
   }
 }
 
+// ─── AGA 3 — Dimensionamiento de placa de orificio (ISO 5167 / AGA Report No. 3) ──
+
+export interface ResultadoAGA3 {
+  D_mm: number           // diámetro interno de tubería (mm)
+  d_mm: number           // diámetro del orificio (mm)
+  beta: number           // relación de diámetros d/D
+  Cd: number             // coeficiente de descarga (Reader-Harris/Gallagher)
+  Ev: number             // factor de aproximación de velocidad 1/√(1-β⁴)
+  dp_max_mbar: number    // ΔP a Qmax (mbar)
+  dp_norm_mbar: number   // ΔP a Qnorm (mbar)
+  dp_min_mbar: number    // ΔP a Qmin (mbar)
+  rho_kgm3: number       // densidad del gas en condiciones de flujo
+  Re_D_max: number       // Reynolds en tubería a Qmax
+  toma: string
+  valido: boolean        // β dentro de rango AGA 3 (0.20–0.75)
+  alerta?: string
+  dp_objetivo_mbar: number
+}
+
+/**
+ * Dimensionamiento preliminar de placa de orificio según AGA Report No. 3 / ISO 5167-2.
+ * Ecuación de flujo: Qt = Cd × Ev × (π/4 × d²) × Y × √(2ΔP/ρf)
+ * Cd: ecuación Reader-Harris/Gallagher (AGA 3 Part 1, §2.4).
+ * Determina β y d para ΔP_max = 250 mbar a Qmax.
+ */
+export function calcularAGA3(
+  qmax_base: number,   // m³/h en condiciones BASE
+  qnorm_base: number,
+  qmin_base: number,
+  presion_kgcm2: number,
+  tamb_c: number,
+  sg: number,
+  Zf: number,
+  diametro_pulg: number,
+  toma: 'brida' | 'esquina' | 'ddmedio',
+  viscosidad_cp: number,
+  p_base_kpa: number,
+  t_base_c: number,
+): ResultadoAGA3 {
+  const Pf_kpa = presion_kgcm2 * 98.0665 + 101.325
+  const Tf_k   = tamb_c + 273.15
+  const Tb_k   = t_base_c + 273.15
+  const Pb_kpa = p_base_kpa
+  const Zb     = papay(0.65, Pb_kpa, t_base_c).Z
+
+  // Caudales base → operación (m³/s)
+  const factorBaseAOp = (Pb_kpa / Pf_kpa) * (Tf_k / Tb_k) * (Zf / Zb)
+  const Qt_max  = qmax_base  * factorBaseAOp / 3600
+  const Qt_norm = qnorm_base * factorBaseAOp / 3600
+  const Qt_min  = qmin_base  * factorBaseAOp / 3600
+
+  // Densidad gas en flujo (kg/m³): ρ = PM / (ZRT)
+  const rho = (sg * 28.97 * Pf_kpa) / (Zf * 8.31446 * Tf_k)
+  const mu  = viscosidad_cp * 1e-3  // Pa·s
+
+  const D_m  = diametro_pulg * 0.0254
+  const D_mm = D_m * 1000
+  const A_D  = Math.PI / 4 * D_m * D_m
+
+  // Parámetros toma (Reader-Harris/Gallagher)
+  let L1 = 0, L2p = 0
+  if (toma === 'brida')  { L1 = 25.4 / D_mm; L2p = 25.4 / D_mm }
+  if (toma === 'ddmedio') { L1 = 1; L2p = 0.47 }
+
+  function computeCd(beta: number, ReD: number): number {
+    const reDsafe = Math.max(ReD, 4000)
+    const A   = Math.pow(19000 * beta / reDsafe, 0.8)
+    const M2p = (2 * L2p) / (1 - beta)
+    let cd = 0.5961 + 0.0261 * beta ** 2 - 0.216 * beta ** 8
+    cd += 0.000521 * Math.pow(1e6 * beta / reDsafe, 0.7)
+    cd += (0.0188 + 0.0063 * A) * Math.pow(beta, 3.5) * Math.pow(1e6 / reDsafe, 0.3)
+    cd += (0.043 + 0.080 * Math.exp(-10 * L1) - 0.123 * Math.exp(-7 * L1))
+          * (1 - 0.11 * A) * beta ** 4 / (1 - beta ** 4)
+    cd -= 0.031 * (M2p - 0.8 * Math.pow(Math.max(M2p, 0), 1.1)) * Math.pow(beta, 1.3)
+    return Math.max(0.55, Math.min(0.85, cd))
+  }
+
+  function flowAtDP(beta: number, DP_Pa: number): { Qt: number; Cd: number; ReD: number } {
+    const d_m = beta * D_m
+    const Ev  = 1 / Math.sqrt(1 - beta ** 4)
+    const A_d = Math.PI / 4 * d_m * d_m
+    let Cd = 0.606, ReD = 1e6
+    for (let i = 0; i < 6; i++) {
+      const Qt_it = Cd * Ev * A_d * Math.sqrt(2 * DP_Pa / rho)
+      ReD = rho * (Qt_it / A_D) * D_m / mu
+      Cd  = computeCd(beta, ReD)
+    }
+    const Qt = Cd * Ev * A_d * Math.sqrt(2 * DP_Pa / rho)
+    return { Qt, Cd, ReD }
+  }
+
+  // Buscar β que produce Qt_max a ΔP_obj = 250 mbar (25 000 Pa)
+  const DP_obj_Pa = 25_000
+  let lo = 0.20, hi = 0.75
+  for (let i = 0; i < 60; i++) {
+    const mid = (lo + hi) / 2
+    const { Qt } = flowAtDP(mid, DP_obj_Pa)
+    if (Qt < Qt_max) lo = mid; else hi = mid
+  }
+  const beta = (lo + hi) / 2
+  const { Cd, ReD } = flowAtDP(beta, DP_obj_Pa)
+  const Ev   = 1 / Math.sqrt(1 - beta ** 4)
+  const d_mm = beta * D_mm
+
+  // ΔP a los demás caudales: ΔP ∝ Qt²
+  const dp_norm_Pa = DP_obj_Pa * (Qt_norm / Qt_max) ** 2
+  const dp_min_Pa  = DP_obj_Pa * (Qt_min  / Qt_max) ** 2
+
+  const fuera_rango = beta < 0.20 || beta > 0.75
+  const alerta = beta < 0.20
+    ? 'β calculado < 0.20: diámetro de orificio muy pequeño. Considerar tubería mayor o ΔP objetivo menor.'
+    : beta > 0.75
+    ? 'β calculado > 0.75: fuera del rango AGA 3. Considerar ΔP objetivo mayor o verificar diámetro de tubería.'
+    : undefined
+
+  const tapaLabel = toma === 'brida' ? 'Brida (flange taps)'
+    : toma === 'esquina' ? 'Esquina (corner taps)'
+    : 'D–D/2 (pipe taps)'
+
+  return {
+    D_mm:          Math.round(D_mm * 10) / 10,
+    d_mm:          Math.round(d_mm * 10) / 10,
+    beta:          Math.round(beta * 10000) / 10000,
+    Cd:            Math.round(Cd * 10000) / 10000,
+    Ev:            Math.round(Ev * 10000) / 10000,
+    dp_max_mbar:   Math.round(DP_obj_Pa / 10) / 10,
+    dp_norm_mbar:  Math.round(dp_norm_Pa / 10) / 10,
+    dp_min_mbar:   Math.round(dp_min_Pa  / 10) / 10,
+    rho_kgm3:      Math.round(rho * 1000) / 1000,
+    Re_D_max:      Math.round(ReD),
+    toma:          tapaLabel,
+    valido:        !fuera_rango,
+    alerta,
+    dp_objetivo_mbar: 250,
+  }
+}
+
 // ─── AGA 8 DETAIL — llamada al servicio Python ────────────────────────────────
 
 export interface RespuestaAGA8 {
