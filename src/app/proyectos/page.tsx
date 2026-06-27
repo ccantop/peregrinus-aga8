@@ -121,21 +121,33 @@ export default async function ProyectosPage() {
                   </div>
                 </div>
 
-                {/* semáforo puesta en marcha */}
-                {pemTotal > 0 && (
-                  <div className="shrink-0 flex flex-col items-center gap-1" title={`Puesta en marcha: ${pemDone}/${pemTotal}`}>
+                {/* semáforo puesta en marcha — visible desde que existe Fase 1 */}
+                {f1?.tecnologia_nombre && (
+                  <div className="shrink-0 flex flex-col items-center gap-1"
+                    title={pemTotal === 0
+                      ? 'Puesta en marcha: no iniciada'
+                      : `Puesta en marcha: ${pemDone}/${pemTotal} completados`}>
                     <div className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold"
                       style={{
-                        background: pemDone === pemTotal
-                          ? 'rgba(34,197,94,0.15)'
-                          : pemDone > 0 ? 'rgba(234,179,8,0.15)' : 'rgba(107,114,128,0.10)',
-                        color: pemDone === pemTotal
-                          ? '#16a34a'
-                          : pemDone > 0 ? '#ca8a04' : 'var(--ink3)',
-                        border: `1px solid ${pemDone === pemTotal ? 'rgba(34,197,94,0.4)' : pemDone > 0 ? 'rgba(234,179,8,0.4)' : 'var(--line)'}`,
+                        background: pemTotal === 0
+                          ? 'rgba(107,114,128,0.08)'
+                          : pemDone === pemTotal
+                            ? 'rgba(34,197,94,0.15)'
+                            : pemDone > 0 ? 'rgba(234,179,8,0.15)' : 'rgba(107,114,128,0.08)',
+                        color: pemTotal === 0
+                          ? 'var(--ink3)'
+                          : pemDone === pemTotal
+                            ? '#16a34a'
+                            : pemDone > 0 ? '#ca8a04' : 'var(--ink3)',
+                        border: `1px solid ${
+                          pemTotal === 0 ? 'var(--line)'
+                          : pemDone === pemTotal ? 'rgba(34,197,94,0.4)'
+                          : pemDone > 0 ? 'rgba(234,179,8,0.4)'
+                          : 'var(--line)'
+                        }`,
                       }}
                     >
-                      {pemDone === pemTotal ? '✓' : `${Math.round(pemDone / pemTotal * 100)}%`}
+                      {pemTotal === 0 ? '—' : pemDone === pemTotal ? '✓' : `${Math.round(pemDone / pemTotal * 100)}%`}
                     </div>
                     <span className="text-[9px] font-mono" style={{ color: 'var(--ink3)' }}>PM</span>
                   </div>
