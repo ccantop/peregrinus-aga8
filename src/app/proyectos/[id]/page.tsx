@@ -23,11 +23,13 @@ export default async function ProyectoDetallePage({
     { data: f1 },
     { data: acts },
     { data: f2 },
+    { data: hojas },
   ] = await Promise.all([
     supabase.from('proyectos').select('*').eq('id', id).single(),
     supabase.from('fase1_datos').select('*').eq('proyecto_id', id).single(),
     supabase.from('actividades').select('*').eq('proyecto_id', id).order('etapa').order('nombre'),
     supabase.from('fase2_datos').select('*').eq('proyecto_id', id).maybeSingle(),
+    supabase.from('hojas_datos').select('estado').eq('proyecto_id', id),
   ])
 
   if (error || !proyecto) notFound()
@@ -171,12 +173,13 @@ export default async function ProyectoDetallePage({
           },
           {
             n: '03', label: 'Instrumentos', desc: 'Hojas de datos ISA',
-            done: false, active: false,
+            done: (hojas ?? []).length > 0 && (hojas ?? []).every(h => h.estado === 'aprobado'),
+            active: false,
             href: `/proyectos/${proyecto.id}/instrumentos`,
           },
           {
             n: '04', label: 'Exportar', desc: 'P&ID · Reporte · Memoria',
-            done: false, active: false,
+            done: !!f2, active: false,
             href: undefined,
           },
           {
