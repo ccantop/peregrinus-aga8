@@ -111,85 +111,59 @@ export default async function ProyectoDetallePage({
             {proyecto.cliente && <>{proyecto.cliente} · </>}{fecha}
           </p>
         </div>
-        <div className="flex gap-2 shrink-0 flex-wrap justify-end">
-          {/* — Diseño — */}
-          <Link
-            href={`/?proyecto=${proyecto.id}`}
-            className="rounded-md px-4 py-2 text-sm transition-colors hover:bg-[#eef4f7]"
-            style={{ border: '1px solid var(--line)', color: 'var(--ink2)' }}
-          >
-            Editar Fase 1
-          </Link>
-          <Link
-            href={`/proyectos/${proyecto.id}/fase2`}
-            className="rounded-md px-4 py-2 text-sm transition-colors hover:bg-[#eef4f7]"
-            style={{ border: '1px solid var(--line)', color: 'var(--ink2)' }}
-          >
-            {proyecto.fase_actual === 'fase2' ? 'Editar Fase 2' : 'Fase 2 →'}
-          </Link>
-          <Link
-            href={`/proyectos/${proyecto.id}/instrumentos`}
-            className="rounded-md px-4 py-2 text-sm transition-colors hover:bg-[#eef4f7]"
-            style={{ border: '1px solid var(--line)', color: 'var(--ink2)' }}
-          >
-            Hojas de datos
-          </Link>
-          <Link
-            href={`/proyectos/${proyecto.id}/puesta-en-marcha`}
-            className="rounded-md px-4 py-2 text-sm transition-colors hover:bg-[#eef4f7]"
-            style={{ border: '1px solid var(--line)', color: 'var(--ink2)' }}
-          >
-            Puesta en marcha
-          </Link>
-
-          {/* — separador visual — */}
-          <span className="self-stretch w-px mx-1" style={{ background: 'var(--line)' }} />
-
-          {/* — Exportar — */}
-          <a
-            href={`/api/exportar-dxf?id=${proyecto.id}`}
-            download
-            className="rounded-md px-4 py-2 text-sm font-semibold transition-opacity hover:opacity-90"
-            style={{ background: 'var(--accent2)', color: '#ffffff' }}
-          >
-            Generar P&ID ↓
-          </a>
-          <a
-            href={`/api/exportar-pdf?id=${proyecto.id}`}
-            download
-            className="rounded-md px-4 py-2 text-sm font-semibold transition-opacity hover:opacity-90"
-            style={{ background: 'var(--accent2)', color: '#ffffff' }}
-          >
-            Generar reporte ↓
-          </a>
-          <a
-            href={`/api/exportar-memoria?id=${proyecto.id}`}
-            download
-            className="rounded-md px-4 py-2 text-sm font-semibold transition-opacity hover:opacity-90"
-            style={{ background: 'var(--accent2)', color: '#ffffff' }}
-          >
-            Generar memoria ↓
-          </a>
-
-          <a
-            href={`/api/exportar-paquete?id=${proyecto.id}`}
-            download
-            className="rounded-md px-4 py-2 text-sm font-semibold transition-opacity hover:opacity-90"
-            style={{ background: 'var(--ink)', color: '#ffffff' }}
-          >
-            Generar paquete completo ↓
-          </a>
-
-          {/* — separador visual — */}
-          <span className="self-stretch w-px mx-1" style={{ background: 'var(--line)' }} />
-
-          <Link
-            href="/"
-            className="rounded-md px-4 py-2 text-sm transition-colors hover:bg-[#eef4f7]"
-            style={{ border: '1px solid var(--line)', color: 'var(--ink2)' }}
-          >
-            + Nuevo
-          </Link>
+        {/* Acciones en dos filas: navegación arriba, exportar abajo */}
+        <div className="flex flex-col gap-2 shrink-0 items-end">
+          {/* fila 1 — navegación */}
+          <div className="flex gap-2 flex-wrap justify-end">
+            <Link href={`/?proyecto=${proyecto.id}`}
+              className="rounded-md px-3 py-1.5 text-xs transition-colors hover:bg-[#eef4f7]"
+              style={{ border: '1px solid var(--line)', color: 'var(--ink2)' }}>
+              Fase 1
+            </Link>
+            <Link href={`/proyectos/${proyecto.id}/fase2`}
+              className="rounded-md px-3 py-1.5 text-xs transition-colors hover:bg-[#eef4f7]"
+              style={{ border: '1px solid var(--line)', color: 'var(--ink2)' }}>
+              {proyecto.fase_actual === 'fase2' ? 'Fase 2 ✓' : 'Fase 2'}
+            </Link>
+            <Link href={`/proyectos/${proyecto.id}/instrumentos`}
+              className="rounded-md px-3 py-1.5 text-xs transition-colors hover:bg-[#eef4f7]"
+              style={{ border: '1px solid var(--line)', color: 'var(--ink2)' }}>
+              Instrumentos
+            </Link>
+            <Link href={`/proyectos/${proyecto.id}/puesta-en-marcha`}
+              className="rounded-md px-3 py-1.5 text-xs transition-colors hover:bg-[#eef4f7]"
+              style={{ border: '1px solid var(--line)', color: 'var(--ink2)' }}>
+              Puesta en marcha
+            </Link>
+            <Link href="/"
+              className="rounded-md px-3 py-1.5 text-xs transition-colors hover:bg-[#eef4f7]"
+              style={{ border: '1px solid var(--line)', color: 'var(--ink2)' }}>
+              + Nuevo
+            </Link>
+          </div>
+          {/* fila 2 — exportar */}
+          <div className="flex gap-2 flex-wrap justify-end">
+            <a href={`/api/exportar-dxf?id=${proyecto.id}`} download
+              className="rounded-md px-3 py-1.5 text-xs font-semibold transition-opacity hover:opacity-90"
+              style={{ background: 'var(--accent2)', color: '#ffffff' }}>
+              P&ID ↓
+            </a>
+            <a href={`/api/exportar-pdf?id=${proyecto.id}`} download
+              className="rounded-md px-3 py-1.5 text-xs font-semibold transition-opacity hover:opacity-90"
+              style={{ background: 'var(--accent2)', color: '#ffffff' }}>
+              Reporte ↓
+            </a>
+            <a href={`/api/exportar-memoria?id=${proyecto.id}`} download
+              className="rounded-md px-3 py-1.5 text-xs font-semibold transition-opacity hover:opacity-90"
+              style={{ background: 'var(--accent2)', color: '#ffffff' }}>
+              Memoria ↓
+            </a>
+            <a href={`/api/exportar-paquete?id=${proyecto.id}`} download
+              className="rounded-md px-3 py-1.5 text-xs font-semibold transition-opacity hover:opacity-90"
+              style={{ background: 'var(--ink)', color: '#ffffff' }}>
+              Paquete completo ↓
+            </a>
+          </div>
         </div>
       </div>
 
