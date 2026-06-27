@@ -35,8 +35,8 @@ export function generarPIDSvg(d: PIDSvgData): string {
   <text x="450" y="38" fill="${C.ink3}" font-family="Liberation Mono,DejaVu Sans Mono,monospace" font-size="10" text-anchor="middle">DN ${d.diametro_pulg}" — ${d.presion_kgcm2} kg/cm² — Q ${d.qnorm} m³/h  |  Tecnología: ${techNombre} · ${techRef}</text>
 
   <!-- línea de tubería (parte en dos para no cruzar el elemento primario) -->
-  <line x1="20" y1="150" x2="400" y2="150" stroke="${C.pipe}" stroke-width="3"/>
-  <line x1="510" y1="150" x2="870" y2="150" stroke="${C.pipe}" stroke-width="3"/>
+  <line x1="20" y1="150" x2="395" y2="150" stroke="${C.pipe}" stroke-width="3"/>
+  <line x1="515" y1="150" x2="870" y2="150" stroke="${C.pipe}" stroke-width="3"/>
 
   <!-- VB-01 Bloqueo entrada -->
   <rect x="40" y="125" width="52" height="50" rx="4" fill="${C.panel}" stroke="${C.teal}" stroke-width="1.5"/>
