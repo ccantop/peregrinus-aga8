@@ -6,8 +6,10 @@ import PID from './PID'
 import dynamic from 'next/dynamic'
 const Vista3D = dynamic(() => import('./Vista3D'), { ssr: false })
 import { seleccionarTecnologia } from '@/lib/engine/seleccion-tecnologia'
-import { calcularCondicionesFisicas, calcularAGA8, calcularAGA3, idRealMm, type ResultadoAGA3 } from '@/lib/engine/calculo-z'
+import { calcularCondicionesFisicas, calcularAGA8, calcularAGA3, calcularAGA7, type ResultadoAGA3, type ResultadoAGA7 } from '@/lib/engine/calculo-z'
 import TarjetaAGA3 from './TarjetaAGA3'
+import TarjetaAGA7 from './TarjetaAGA7'
+import TarjetaCoriolis from './TarjetaCoriolis'
 import { getNormasAplicables, getActividadesBase } from '@/lib/engine/normativa'
 import { guardarProyecto } from '@/lib/acciones/guardar-proyecto'
 import { actualizarProyecto } from '@/lib/acciones/actualizar-proyecto'
@@ -65,6 +67,7 @@ interface Resultado {
   actividades: Actividad[]
   turndown: number
   aga3?: ResultadoAGA3 | null
+  aga7?: ResultadoAGA7 | null
 }
 
 // ─── componente ───────────────────────────────────────────────────────────────
@@ -119,18 +122,24 @@ export default function Disenador({ initialData }: { initialData?: InitialData |
     const normas = getNormasAplicables(datos.tipo, datos.fiscal)
     const actividades = getActividadesBase(datos.tipo, datos.fiscal)
     const turndown = datos.qmax / Math.max(datos.qmin, 0.01)
+    const Zf = calculo.Z_papay
     const aga3 = (tech.key === 'orificio' || tech.key === 'diafragma')
       ? calcularAGA3(
           datos.qmax, datos.qnorm, datos.qmin,
           datos.presion_kgcm2, adv.tamb_min_c,
-          adv.sg, calculo.Z_papay,
-          datos.diametro_pulg,
-          adv.toma_diferencial,
-          adv.viscosidad_cp,
+          adv.sg, Zf, datos.diametro_pulg,
+          adv.toma_diferencial, adv.viscosidad_cp,
           adv.p_base_kpa, adv.t_base_c,
         )
       : null
-    setResultado({ tech, calculo, normas, actividades, turndown, aga3 })
+    const aga7 = (tech.key === 'turbina' || tech.key === 'ultrasonico')
+      ? calcularAGA7(
+          datos.qmin, datos.qnorm, datos.qmax,
+          datos.presion_kgcm2, adv.tamb_min_c,
+          adv.p_base_kpa, adv.t_base_c, Zf,
+        )
+      : null
+    setResultado({ tech, calculo, normas, actividades, turndown, aga3, aga7 })
     setTab('pid')
     setGuardadoId(null)
     setErrorGuardado(null)
@@ -147,14 +156,21 @@ export default function Disenador({ initialData }: { initialData?: InitialData |
           ? calcularAGA3(
               datos.qmax, datos.qnorm, datos.qmin,
               datos.presion_kgcm2, adv.tamb_min_c,
-              adv.sg, aga8.z,
-              datos.diametro_pulg, adv.toma_diferencial,
+              adv.sg, aga8.z, datos.diametro_pulg, adv.toma_diferencial,
               adv.viscosidad_cp, adv.p_base_kpa, adv.t_base_c,
             )
           : prev.aga3
+        const aga7Updated = (prev.tech.key === 'turbina' || prev.tech.key === 'ultrasonico')
+          ? calcularAGA7(
+              datos.qmin, datos.qnorm, datos.qmax,
+              datos.presion_kgcm2, adv.tamb_min_c,
+              adv.p_base_kpa, adv.t_base_c, aga8.z,
+            )
+          : prev.aga7
         return {
           ...prev,
           aga3: aga3Updated,
+          aga7: aga7Updated,
           calculo: {
             ...prev.calculo,
             Z_aga8: aga8.z,
@@ -452,13 +468,28 @@ export default function Disenador({ initialData }: { initialData?: InitialData |
                 </div>
               </Card>
 
-              {/* AGA 3 — solo para orificio/diafragma */}
+              {/* AGA 3 — orificio / diafragma */}
               {resultado.aga3 && (
                 <TarjetaAGA3
                   aga3={resultado.aga3}
-                  qmin={datos.qmin}
-                  qnorm={datos.qnorm}
-                  qmax={datos.qmax}
+                  qmin={datos.qmin} qnorm={datos.qnorm} qmax={datos.qmax}
+                />
+              )}
+
+              {/* AGA 7 — turbina / ultrasónico */}
+              {resultado.aga7 && (
+                <TarjetaAGA7
+                  aga7={resultado.aga7}
+                  qmin={datos.qmin} qnorm={datos.qnorm} qmax={datos.qmax}
+                  metodoZ={resultado.calculo.metodo}
+                />
+              )}
+
+              {/* Coriolis — medición másica */}
+              {resultado.tech.key === 'coriolis' && (
+                <TarjetaCoriolis
+                  qmin={datos.qmin} qnorm={datos.qnorm} qmax={datos.qmax}
+                  sg={adv.sg}
                 />
               )}
 

@@ -3,7 +3,9 @@ import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import ActividadesEditor from '@/components/ActividadesEditor'
 import TarjetaAGA3 from '@/components/TarjetaAGA3'
-import { calcularAGA3, calcularCondicionesFisicas } from '@/lib/engine/calculo-z'
+import TarjetaAGA7 from '@/components/TarjetaAGA7'
+import TarjetaCoriolis from '@/components/TarjetaCoriolis'
+import { calcularAGA3, calcularAGA7, calcularCondicionesFisicas } from '@/lib/engine/calculo-z'
 
 const tipoLabel: Record<string, string> = {
   city_gate: 'City Gate (SISTRANGAS/CENAGAS)',
@@ -36,26 +38,38 @@ export default async function ProyectoDetallePage({
 
   if (error || !proyecto) notFound()
 
+  const Zf_page = f1
+    ? calcularCondicionesFisicas({
+        sg: Number(f1.sg ?? 0.65), co2_pct: Number(f1.co2_pct ?? 2),
+        n2_pct: Number(f1.n2_pct ?? 1), viscosidad_cp: Number(f1.viscosidad_cp ?? 0.012),
+        toma_diferencial: (f1.toma_diferencial ?? 'brida') as 'brida' | 'esquina' | 'ddmedio',
+        elevacion_msnm: Number(f1.elevacion_msnm ?? 0),
+        patm_kpa: Number(f1.presion_kgcm2) * 98.0665 + 101.325,
+        tamb_min_c: Number(f1.tamb_min_c ?? 20),
+        p_base_kpa: Number(f1.p_base_kpa ?? 101.325), t_base_c: Number(f1.t_base_c ?? 15.6),
+        dew_agua_c: Number(f1.dew_agua_c ?? -10), dew_hc_c: Number(f1.dew_hc_c ?? -20),
+        dp_regulador_bar: Number(f1.dp_regulador_bar ?? 5),
+      }).Z_papay
+    : 1
+
   const aga3 = f1 && (f1.tecnologia_key === 'orificio' || f1.tecnologia_key === 'diafragma')
     ? calcularAGA3(
         Number(f1.qmax), Number(f1.qnorm), Number(f1.qmin),
         Number(f1.presion_kgcm2), Number(f1.tamb_min_c ?? 20),
-        Number(f1.sg ?? 0.65),
-        calcularCondicionesFisicas({
-          sg: Number(f1.sg ?? 0.65), co2_pct: Number(f1.co2_pct ?? 2),
-          n2_pct: Number(f1.n2_pct ?? 1), viscosidad_cp: Number(f1.viscosidad_cp ?? 0.012),
-          toma_diferencial: (f1.toma_diferencial ?? 'brida') as 'brida' | 'esquina' | 'ddmedio',
-          elevacion_msnm: Number(f1.elevacion_msnm ?? 0),
-          patm_kpa: Number(f1.presion_kgcm2) * 98.0665 + 101.325,
-          tamb_min_c: Number(f1.tamb_min_c ?? 20),
-          p_base_kpa: Number(f1.p_base_kpa ?? 101.325), t_base_c: Number(f1.t_base_c ?? 15.6),
-          dew_agua_c: Number(f1.dew_agua_c ?? -10), dew_hc_c: Number(f1.dew_hc_c ?? -20),
-          dp_regulador_bar: Number(f1.dp_regulador_bar ?? 5),
-        }).Z_papay,
+        Number(f1.sg ?? 0.65), Zf_page,
         Number(f1.diametro_pulg),
         (f1.toma_diferencial ?? 'brida') as 'brida' | 'esquina' | 'ddmedio',
         Number(f1.viscosidad_cp ?? 0.012),
         Number(f1.p_base_kpa ?? 101.325), Number(f1.t_base_c ?? 15.6),
+      )
+    : null
+
+  const aga7 = f1 && (f1.tecnologia_key === 'turbina' || f1.tecnologia_key === 'ultrasonico')
+    ? calcularAGA7(
+        Number(f1.qmin), Number(f1.qnorm), Number(f1.qmax),
+        Number(f1.presion_kgcm2), Number(f1.tamb_min_c ?? 20),
+        Number(f1.p_base_kpa ?? 101.325), Number(f1.t_base_c ?? 15.6),
+        Zf_page,
       )
     : null
 
@@ -343,13 +357,23 @@ export default async function ProyectoDetallePage({
               )}
             </Section>
           )}
-          {/* AGA 3 — solo orificio/diafragma */}
           {aga3 && f1 && (
             <TarjetaAGA3
               aga3={aga3}
-              qmin={Number(f1.qmin)}
-              qnorm={Number(f1.qnorm)}
-              qmax={Number(f1.qmax)}
+              qmin={Number(f1.qmin)} qnorm={Number(f1.qnorm)} qmax={Number(f1.qmax)}
+            />
+          )}
+          {aga7 && f1 && (
+            <TarjetaAGA7
+              aga7={aga7}
+              qmin={Number(f1.qmin)} qnorm={Number(f1.qnorm)} qmax={Number(f1.qmax)}
+              metodoZ="papay"
+            />
+          )}
+          {f1?.tecnologia_key === 'coriolis' && f1 && (
+            <TarjetaCoriolis
+              qmin={Number(f1.qmin)} qnorm={Number(f1.qnorm)} qmax={Number(f1.qmax)}
+              sg={Number(f1.sg ?? 0.65)}
             />
           )}
         </div>
