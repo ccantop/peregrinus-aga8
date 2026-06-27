@@ -6,7 +6,8 @@ import PID from './PID'
 import dynamic from 'next/dynamic'
 const Vista3D = dynamic(() => import('./Vista3D'), { ssr: false })
 import { seleccionarTecnologia } from '@/lib/engine/seleccion-tecnologia'
-import { calcularCondicionesFisicas, calcularAGA8 } from '@/lib/engine/calculo-z'
+import { calcularCondicionesFisicas, calcularAGA8, calcularAGA3, idRealMm, type ResultadoAGA3 } from '@/lib/engine/calculo-z'
+import TarjetaAGA3 from './TarjetaAGA3'
 import { getNormasAplicables, getActividadesBase } from '@/lib/engine/normativa'
 import { guardarProyecto } from '@/lib/acciones/guardar-proyecto'
 import { actualizarProyecto } from '@/lib/acciones/actualizar-proyecto'
@@ -63,6 +64,7 @@ interface Resultado {
   normas: Norma[]
   actividades: Actividad[]
   turndown: number
+  aga3?: ResultadoAGA3 | null
 }
 
 // ─── componente ───────────────────────────────────────────────────────────────
@@ -117,7 +119,18 @@ export default function Disenador({ initialData }: { initialData?: InitialData |
     const normas = getNormasAplicables(datos.tipo, datos.fiscal)
     const actividades = getActividadesBase(datos.tipo, datos.fiscal)
     const turndown = datos.qmax / Math.max(datos.qmin, 0.01)
-    setResultado({ tech, calculo, normas, actividades, turndown })
+    const aga3 = (tech.key === 'orificio' || tech.key === 'diafragma')
+      ? calcularAGA3(
+          datos.qmax, datos.qnorm, datos.qmin,
+          datos.presion_kgcm2, adv.tamb_min_c,
+          adv.sg, calculo.Z_papay,
+          datos.diametro_pulg,
+          adv.toma_diferencial,
+          adv.viscosidad_cp,
+          adv.p_base_kpa, adv.t_base_c,
+        )
+      : null
+    setResultado({ tech, calculo, normas, actividades, turndown, aga3 })
     setTab('pid')
     setGuardadoId(null)
     setErrorGuardado(null)
@@ -128,17 +141,28 @@ export default function Disenador({ initialData }: { initialData?: InitialData |
     const aga8 = await calcularAGA8(adv, presion_op_kpa)
     setCalculandoAGA8(false)
     if (aga8) {
-      setResultado(prev =>
-        prev ? {
+      setResultado(prev => {
+        if (!prev) return prev
+        const aga3Updated = (prev.tech.key === 'orificio' || prev.tech.key === 'diafragma')
+          ? calcularAGA3(
+              datos.qmax, datos.qnorm, datos.qmin,
+              datos.presion_kgcm2, adv.tamb_min_c,
+              adv.sg, aga8.z,
+              datos.diametro_pulg, adv.toma_diferencial,
+              adv.viscosidad_cp, adv.p_base_kpa, adv.t_base_c,
+            )
+          : prev.aga3
+        return {
           ...prev,
+          aga3: aga3Updated,
           calculo: {
             ...prev.calculo,
             Z_aga8: aga8.z,
             densidad_kgm3: aga8.densidad_kgm3,
             metodo: 'aga8-detail' as const,
           },
-        } : prev
-      )
+        }
+      })
     }
   }
 
@@ -427,6 +451,16 @@ export default function Disenador({ initialData }: { initialData?: InitialData |
                   </div>
                 </div>
               </Card>
+
+              {/* AGA 3 — solo para orificio/diafragma */}
+              {resultado.aga3 && (
+                <TarjetaAGA3
+                  aga3={resultado.aga3}
+                  qmin={datos.qmin}
+                  qnorm={datos.qnorm}
+                  qmax={datos.qmax}
+                />
+              )}
 
               {/* Tabs P&ID / 3D / Actividades */}
               <Card title="">

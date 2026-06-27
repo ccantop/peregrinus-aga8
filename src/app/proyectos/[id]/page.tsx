@@ -2,6 +2,8 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import ActividadesEditor from '@/components/ActividadesEditor'
+import TarjetaAGA3 from '@/components/TarjetaAGA3'
+import { calcularAGA3, calcularCondicionesFisicas } from '@/lib/engine/calculo-z'
 
 const tipoLabel: Record<string, string> = {
   city_gate: 'City Gate (SISTRANGAS/CENAGAS)',
@@ -33,6 +35,29 @@ export default async function ProyectoDetallePage({
   ])
 
   if (error || !proyecto) notFound()
+
+  const aga3 = f1 && (f1.tecnologia_key === 'orificio' || f1.tecnologia_key === 'diafragma')
+    ? calcularAGA3(
+        Number(f1.qmax), Number(f1.qnorm), Number(f1.qmin),
+        Number(f1.presion_kgcm2), Number(f1.tamb_min_c ?? 20),
+        Number(f1.sg ?? 0.65),
+        calcularCondicionesFisicas({
+          sg: Number(f1.sg ?? 0.65), co2_pct: Number(f1.co2_pct ?? 2),
+          n2_pct: Number(f1.n2_pct ?? 1), viscosidad_cp: Number(f1.viscosidad_cp ?? 0.012),
+          toma_diferencial: (f1.toma_diferencial ?? 'brida') as 'brida' | 'esquina' | 'ddmedio',
+          elevacion_msnm: Number(f1.elevacion_msnm ?? 0),
+          patm_kpa: Number(f1.presion_kgcm2) * 98.0665 + 101.325,
+          tamb_min_c: Number(f1.tamb_min_c ?? 20),
+          p_base_kpa: Number(f1.p_base_kpa ?? 101.325), t_base_c: Number(f1.t_base_c ?? 15.6),
+          dew_agua_c: Number(f1.dew_agua_c ?? -10), dew_hc_c: Number(f1.dew_hc_c ?? -20),
+          dp_regulador_bar: Number(f1.dp_regulador_bar ?? 5),
+        }).Z_papay,
+        Number(f1.diametro_pulg),
+        (f1.toma_diferencial ?? 'brida') as 'brida' | 'esquina' | 'ddmedio',
+        Number(f1.viscosidad_cp ?? 0.012),
+        Number(f1.p_base_kpa ?? 101.325), Number(f1.t_base_c ?? 15.6),
+      )
+    : null
 
   const fecha = new Date(proyecto.creado_en).toLocaleDateString('es-MX', {
     day: '2-digit', month: 'long', year: 'numeric',
@@ -317,6 +342,15 @@ export default async function ProyectoDetallePage({
                 </p>
               )}
             </Section>
+          )}
+          {/* AGA 3 — solo orificio/diafragma */}
+          {aga3 && f1 && (
+            <TarjetaAGA3
+              aga3={aga3}
+              qmin={Number(f1.qmin)}
+              qnorm={Number(f1.qnorm)}
+              qmax={Number(f1.qmax)}
+            />
           )}
         </div>
 
