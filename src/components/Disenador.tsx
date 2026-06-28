@@ -326,7 +326,7 @@ export default function Disenador({ initialData }: { initialData?: InitialData |
             ))}
           </div>
           <p className="text-[10.5px] mt-1" style={{ color: 'var(--ink3)' }}>
-            Turndown = Qmax / Qmin — define la tecnología viable
+            Rango de medición = Qmax / Qmin — define la tecnología viable
           </p>
 
           <div className="grid grid-cols-2 gap-2">
@@ -471,8 +471,8 @@ export default function Disenador({ initialData }: { initialData?: InitialData |
                     {resultado.tech.nombre}
                   </div>
                   <div className="text-xs" style={{ color: 'var(--ink2)' }}>
-                    Turndown calculado: <b style={{ color: 'var(--ink)' }}>{resultado.turndown.toFixed(1)}:1</b>
-                    {' · '}Turndown típico: <b style={{ color: 'var(--ink)' }}>{resultado.tech.turndown_tipico}</b>
+                    Rango de medición calculado: <b style={{ color: 'var(--ink)' }}>{resultado.turndown.toFixed(1)}:1</b>
+                    {' · '}Rango típico: <b style={{ color: 'var(--ink)' }}>{resultado.tech.turndown_tipico}</b>
                     <br />
                     Exactitud: <b style={{ color: 'var(--ink)' }}>{resultado.tech.exactitud}</b>
                     {' · '}Referencia: <b style={{ color: 'var(--ink)' }}>{resultado.tech.referencia}</b>

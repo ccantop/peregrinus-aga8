@@ -277,7 +277,7 @@ export default async function ProyectoDetallePage({
               <Row label="Qmín" value={`${Number(f1.qmin).toLocaleString('es-MX')} m³/h`} />
               <Row label="Qnorm" value={`${Number(f1.qnorm).toLocaleString('es-MX')} m³/h`} />
               <Row label="Qmáx" value={`${Number(f1.qmax).toLocaleString('es-MX')} m³/h`} />
-              <Row label="Turndown"
+              <Row label="Rango de medición"
                 value={`1 : ${(Number(f1.qmax) / Math.max(Number(f1.qmin), 0.01)).toFixed(1)}`} />
               <Row label="Presión" value={`${f1.presion_kgcm2} kg/cm²`} />
               <Row label="Diámetro" value={`${f1.diametro_pulg}"`} />

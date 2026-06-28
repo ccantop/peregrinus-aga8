@@ -126,7 +126,7 @@ function RangoChart({ qmin, qnorm, qmax }: { qmin: number; qnorm: number; qmax: 
       {/* etiqueta ABAJO: Qnorm */}
       <SvgText x={xNorm} y={trackY + trackH + 12} style={{ fontSize: 7.5, fill: C.ink }} textAnchor="middle">Qnorm  {fmt(qnorm)} m3/h</SvgText>
       {/* turndown */}
-      <SvgText x={W - PR} y={H - 4} style={{ fontSize: 6.5, fill: C.ink3 }} textAnchor="end">Turndown {td}:1</SvgText>
+      <SvgText x={W - PR} y={H - 4} style={{ fontSize: 6.5, fill: C.ink3 }} textAnchor="end">Rango de medición {td}:1</SvgText>
     </Svg>
   )
 }
@@ -392,7 +392,7 @@ export function MemoriaCalculoPDF({ d }: { d: DatosMemoria }) {
           <Row2 l1="Qmín" v1={`${Number(f1.qmin).toLocaleString('es-MX')} m³/h`}
                 l2="Qmáx" v2={`${Number(f1.qmax).toLocaleString('es-MX')} m³/h`} />
           <Row2 l1="Qnorm" v1={`${Number(f1.qnorm).toLocaleString('es-MX')} m³/h`}
-                l2="Turndown" v2={`${turndown} : 1`} />
+                l2="Rango de medición" v2={`${turndown} : 1`} />
           <Row2 l1="Presión operación" v1={`${f1.presion_kgcm2} kg/cm²  (${presionBar} bar)`}
                 l2="Presión absoluta" v2={`${presionKPa} kPa`} />
           <Row2 l1="Diámetro nominal" v1={`${f1.diametro_pulg}" (DN${dnMm} mm)`}
@@ -709,7 +709,7 @@ export function MemoriaCalculoPDF({ d }: { d: DatosMemoria }) {
 
         <Text style={s.secTitle}>Criterios aplicados en la selección</Text>
         <View style={s.tbl}>
-          <Row2 l1="Turndown calculado" v1={`${turndown} : 1`}
+          <Row2 l1="Rango de medición calculado" v1={`${turndown} : 1`}
                 l2="Custodia fiscal" v2={f1.fiscal ? 'Sí' : 'No'} />
           <Row2 l1="Fluido" v1={f1.fluido === 'gn' ? 'Gas natural' : 'GLP / mezcla'}
                 l2="Diámetro nominal" v2={`${f1.diametro_pulg}" (DN${dnMm})`} />

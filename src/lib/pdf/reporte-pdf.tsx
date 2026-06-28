@@ -224,7 +224,7 @@ export function ReportePDF({ d }: { d: DatosReporte }) {
             <DataRow label="Caudal minimo (Qmin)"   value={`${Number(f1.qmin).toLocaleString('es-MX')} m³/h`} />
             <DataRow label="Caudal nominal (Qnorm)" value={`${Number(f1.qnorm).toLocaleString('es-MX')} m³/h`} />
             <DataRow label="Caudal maximo (Qmax)"   value={`${Number(f1.qmax).toLocaleString('es-MX')} m³/h`} />
-            <DataRow label="Turndown"               value={`1 : ${turndown}`} />
+            <DataRow label="Rango de medición"       value={`1 : ${turndown}`} />
             <DataRow label="Presion de operacion"   value={`${f1.presion_kgcm2} kg/cm²  (${presionKPa} kPa)`} />
             <DataRow label="Diametro nominal"       value={`${f1.diametro_pulg}"  (DN${dnMm} mm)`} />
             {f1.sg     != null && <DataRow label="Gravedad especifica (SG)" value={String(f1.sg)} />}

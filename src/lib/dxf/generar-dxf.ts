@@ -506,7 +506,7 @@ function makeTabla(d: DatosDXF, x0 = 10, y0 = 135, W = 620, H = 100): Rec[] {
     ['Qmin',            `${d.qmin} m3/h`,     'Presion operacion',    `${d.presion_kgcm2} kg/cm2 (${presionKpa} kPa)`],
     ['Qnorm',           `${d.qnorm} m3/h`,    'Diametro nominal',     `${d.diametro_pulg}" (DN${Math.round(d.diametro_pulg*25.4)} mm)`],
     ['Qmax',            `${d.qmax} m3/h`,     'Grav. especifica (SG)',d.sg != null ? String(d.sg) : 'N/D'],
-    ['Turndown',        `${td}:1`,            'CO2 / N2 (% mol)',     `${d.co2_pct ?? 'N/D'} / ${d.n2_pct ?? 'N/D'}`],
+    ['Rango de medición', `${td}:1`,            'CO2 / N2 (% mol)',     `${d.co2_pct ?? 'N/D'} / ${d.n2_pct ?? 'N/D'}`],
   ]
 
   rows.forEach((row, i) => {

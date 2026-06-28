@@ -23,7 +23,7 @@ function make(key: TecnologiaKey, motivo: string): ResultadoTecnologia {
 /**
  * Motor de reglas de selección de tecnología de medición.
  * Primera capa de filtro — incompleta a propósito, pendiente de refinar con experiencia de campo.
- * Prioridad de reglas: GLP > fiscal+turndown alto > fiscal+turndown bajo > turbina > diafragma > default.
+ * Prioridad de reglas: GLP > fiscal+rango alto > fiscal+rango bajo > turbina > diafragma > default.
  */
 export function seleccionarTecnologia(datos: DatosProceso): ResultadoTecnologia {
   const { fluido, fiscal, qmin, qmax } = datos
@@ -35,19 +35,19 @@ export function seleccionarTecnologia(datos: DatosProceso): ResultadoTecnologia 
   }
 
   if (fiscal && turndown > 30) {
-    return make('ultrasonico', `Turndown calculado de ${td}:1 excede el rango de orificio/turbina; sin partes móviles, ideal para fiscal.`)
+    return make('ultrasonico', `Rango de medición calculado de ${td}:1 excede el rango de orificio/turbina; sin partes móviles, ideal para fiscal.`)
   }
 
   if (fiscal && turndown <= 5) {
-    return make('orificio', `Turndown bajo (${td}:1) y caudal estable — solución fiscal de menor costo de mantenimiento.`)
+    return make('orificio', `Rango de medición bajo (${td}:1) y caudal estable — solución fiscal de menor costo de mantenimiento.`)
   }
 
   if (turndown > 10 && turndown <= 30) {
-    return make('turbina', `Turndown de ${td}:1 — buen balance de exactitud y mantenimiento para industrial/interconexión media presión.`)
+    return make('turbina', `Rango de medición de ${td}:1 — buen balance de exactitud y mantenimiento para industrial/interconexión media presión.`)
   }
 
   if (!fiscal && turndown > 20) {
-    return make('diafragma', `Uso final no fiscal, turndown de ${td}:1 — diafragma cubre el rango sin necesidad de exactitud fiscal.`)
+    return make('diafragma', `Uso final no fiscal, rango de medición de ${td}:1 — diafragma cubre el rango sin necesidad de exactitud fiscal.`)
   }
 
   return make('ultrasonico', `Configuración por defecto de mayor versatilidad para el rango ingresado (${td}:1).`)
