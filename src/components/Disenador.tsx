@@ -32,6 +32,7 @@ export interface InitialData {
     elevacion_msnm?: number | null; patm_kpa?: number | null; tamb_min_c?: number | null
     p_base_kpa?: number | null; t_base_c?: number | null
     dew_agua_c?: number | null; dew_hc_c?: number | null; dp_regulador_bar?: number | null
+    schedule_tuberia?: string | null
   }
 }
 
@@ -101,7 +102,9 @@ export default function Disenador({ initialData }: { initialData?: InitialData |
     dp_regulador_bar: f1.dp_regulador_bar ?? DEFAULT_ADV.dp_regulador_bar,
   } : DEFAULT_ADV)
 
-  const [schedule, setSchedule] = useState<ScheduleTuberia>('sch40')
+  const [schedule, setSchedule] = useState<ScheduleTuberia>(
+    (initialData?.fase1?.schedule_tuberia as ScheduleTuberia) ?? 'sch40'
+  )
   const [advOpen, setAdvOpen] = useState(false)
   const [resultado, setResultado] = useState<Resultado | null>(null)
   const [tab, setTab] = useState<'pid' | '3d' | 'actividades'>('pid')
@@ -202,6 +205,7 @@ export default function Disenador({ initialData }: { initialData?: InitialData |
           datos, adv,
           tech: resultado.tech,
           actividades: resultado.actividades,
+          schedule_tuberia: schedule,
         })
         setGuardadoId(proyectoId)
       } else {
@@ -211,6 +215,7 @@ export default function Disenador({ initialData }: { initialData?: InitialData |
           datos, adv,
           tech: resultado.tech,
           actividades: resultado.actividades,
+          schedule_tuberia: schedule,
         })
         setGuardadoId(id)
       }

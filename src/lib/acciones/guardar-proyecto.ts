@@ -12,6 +12,7 @@ export interface GuardarInput {
   adv: VariablesAvanzadas
   tech: ResultadoTecnologia
   actividades: Actividad[]
+  schedule_tuberia?: string
 }
 
 export async function guardarProyecto(input: GuardarInput): Promise<string> {
@@ -63,6 +64,7 @@ export async function guardarProyecto(input: GuardarInput): Promise<string> {
     tecnologia_key: input.tech.key,
     tecnologia_nombre: input.tech.nombre,
     tecnologia_motivo: input.tech.motivo,
+    schedule_tuberia: input.schedule_tuberia ?? 'sch40',
   })
 
   if (errFase1) throw new Error(errFase1.message)

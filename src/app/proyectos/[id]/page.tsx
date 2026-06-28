@@ -5,7 +5,7 @@ import ActividadesEditor from '@/components/ActividadesEditor'
 import TarjetaAGA3 from '@/components/TarjetaAGA3'
 import TarjetaAGA7 from '@/components/TarjetaAGA7'
 import TarjetaCoriolis from '@/components/TarjetaCoriolis'
-import { calcularAGA3, calcularAGA7, calcularCondicionesFisicas } from '@/lib/engine/calculo-z'
+import { calcularAGA3, calcularAGA7, calcularCondicionesFisicas, type ScheduleTuberia } from '@/lib/engine/calculo-z'
 
 const tipoLabel: Record<string, string> = {
   city_gate: 'City Gate (SISTRANGAS/CENAGAS)',
@@ -61,6 +61,7 @@ export default async function ProyectoDetallePage({
         (f1.toma_diferencial ?? 'brida') as 'brida' | 'esquina' | 'ddmedio',
         Number(f1.viscosidad_cp ?? 0.012),
         Number(f1.p_base_kpa ?? 101.325), Number(f1.t_base_c ?? 15.6),
+        (f1.schedule_tuberia ?? 'sch40') as ScheduleTuberia,
       )
     : null
 

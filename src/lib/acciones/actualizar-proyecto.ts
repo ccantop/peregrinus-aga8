@@ -12,6 +12,7 @@ export interface ActualizarInput {
   adv: VariablesAvanzadas
   tech: ResultadoTecnologia
   actividades: Actividad[]
+  schedule_tuberia?: string
 }
 
 export async function actualizarProyecto(input: ActualizarInput): Promise<void> {
@@ -51,6 +52,7 @@ export async function actualizarProyecto(input: ActualizarInput): Promise<void> 
       tecnologia_key: input.tech.key,
       tecnologia_nombre: input.tech.nombre,
       tecnologia_motivo: input.tech.motivo,
+      schedule_tuberia: input.schedule_tuberia ?? 'sch40',
     }, { onConflict: 'proyecto_id' })
   if (e2) throw new Error(e2.message)
 
