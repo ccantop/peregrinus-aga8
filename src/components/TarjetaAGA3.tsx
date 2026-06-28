@@ -7,6 +7,7 @@ interface Props {
   qmin: number
   qnorm: number
   qmax: number
+  tecnologia?: 'orificio' | 'diafragma'
 }
 
 const chip = (label: string, value: string, accent?: boolean) => (
@@ -35,12 +36,15 @@ function DPBar({ dp, dpMax }: { dp: number; dpMax: number }) {
   )
 }
 
-export default function TarjetaAGA3({ aga3, qmin, qnorm, qmax }: Props) {
+export default function TarjetaAGA3({ aga3, qmin, qnorm, qmax, tecnologia = 'orificio' }: Props) {
+  const titulo = tecnologia === 'diafragma'
+    ? 'Diafragma — NOM-002-SECRE / AGA 3'
+    : 'Placa de orificio — AGA 3 / ISO 5167'
   return (
     <div className="rounded-lg border p-5" style={{ background: 'var(--panel)', borderColor: 'var(--line)' }}>
       <div className="flex items-center justify-between mb-3">
         <span className="text-xs font-semibold" style={{ color: 'var(--ink)' }}>
-          Placa de orificio — AGA 3 / ISO 5167
+          {titulo}
         </span>
         <span className="text-[10px] font-mono px-2 py-0.5 rounded"
           style={{

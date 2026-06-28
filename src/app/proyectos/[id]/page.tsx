@@ -333,6 +333,7 @@ export default async function ProyectoDetallePage({
             <TarjetaAGA3
               aga3={aga3}
               qmin={Number(f1.qmin)} qnorm={Number(f1.qnorm)} qmax={Number(f1.qmax)}
+              tecnologia={f1.tecnologia_key as 'orificio' | 'diafragma'}
             />
           )}
           {aga7 && f1 && (

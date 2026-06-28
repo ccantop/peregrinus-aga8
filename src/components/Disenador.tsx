@@ -487,6 +487,7 @@ export default function Disenador({ initialData }: { initialData?: InitialData |
                 <TarjetaAGA3
                   aga3={resultado.aga3}
                   qmin={datos.qmin} qnorm={datos.qnorm} qmax={datos.qmax}
+                  tecnologia={resultado.tech.key as 'orificio' | 'diafragma'}
                 />
               )}
 
