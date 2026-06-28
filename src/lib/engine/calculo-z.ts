@@ -130,37 +130,52 @@ export function calcularAGA7(
   }
 }
 
-// ─── Tabla ID real ASME B36.10M (diámetro interno en mm, Schedule 40 / STD) ────
-// Fuente: ASME B36.10M-2018, Tabla 1. Usado para AGA 3 en lugar del OD nominal.
-const ID_SCH40_MM: Record<number, number> = {
-  0.5:  15.80,
-  0.75: 20.93,
-  1:    26.64,
-  1.25: 35.05,
-  1.5:  40.89,
-  2:    52.50,
-  2.5:  62.71,
-  3:    77.93,
-  4:   102.26,
-  6:   154.05,
-  8:   202.72,
-  10:  254.51,
-  12:  303.23,
-  14:  333.35,
-  16:  381.00,
-  18:  428.65,
-  20:  477.82,
-  24:  574.65,
+// ─── Tabla ID real ASME B36.10M (diámetro interno en mm) ────────────────────
+// Fuente: ASME B36.10M-2018, Tabla 1. DN en pulgadas nominales.
+// Schedules disponibles: sch40 (= STD para ≤10"), sch80 (= XH para ≤8"),
+//                        sch160, xxh (doble extra pesado).
+
+export type ScheduleTuberia = 'sch40' | 'sch80' | 'sch160' | 'xxh'
+
+const ID_MM: Record<ScheduleTuberia, Record<number, number>> = {
+  sch40: {
+    0.5: 15.80,  0.75: 20.93,  1: 26.64,  1.25: 35.05,  1.5: 40.89,
+    2: 52.50,  2.5: 62.71,  3: 77.93,  4: 102.26,  6: 154.05,
+    8: 202.72,  10: 254.51,  12: 303.23,  14: 333.35,  16: 381.00,
+    18: 428.65,  20: 477.82,  24: 574.65,
+  },
+  sch80: {
+    0.5: 13.87,  0.75: 18.85,  1: 24.31,  1.25: 32.46,  1.5: 38.10,
+    2: 49.25,  2.5: 58.93,  3: 73.66,  4: 97.18,  6: 146.33,
+    8: 193.68,  10: 242.87,  12: 288.89,  14: 330.20,  16: 374.65,
+    18: 423.42,  20: 469.90,  24: 566.52,
+  },
+  sch160: {
+    0.5: 11.07,  0.75: 15.57,  1: 20.70,  1.25: 28.96,  1.5: 33.99,
+    2: 42.82,  2.5: 53.34,  3: 66.65,  4: 87.32,  6: 131.76,
+    8: 173.06,  10: 222.25,  12: 263.49,  14: 304.80,  16: 347.67,
+    18: 390.53,  20: 438.15,  24: 533.40,
+  },
+  xxh: {
+    0.5:  6.35,  0.75: 12.52,  1: 15.24,  1.25: 22.35,  1.5: 25.40,
+    2: 38.10,  2.5: 46.02,  3: 58.42,  4: 80.06,  6: 120.65,
+    8: 158.75,  10: 203.20,  12: 247.65,  14: 292.10,  16: 333.35,
+    18: 381.00,  20: 425.45,  24: 514.35,
+  },
 }
 
-/** Devuelve el ID real (mm) para un diámetro nominal en pulgadas, Sch 40.
- *  Si el diámetro no está en tabla usa d_nominal × 25.4 como fallback. */
-export function idRealMm(diametro_pulg: number): number {
-  // buscar coincidencia exacta o el más cercano
-  const keys = Object.keys(ID_SCH40_MM).map(Number)
-  const exact = ID_SCH40_MM[diametro_pulg]
-  if (exact !== undefined) return exact
-  // fallback: nominal × 25.4 (sin corrección de pared)
+export const SCHEDULE_LABELS: Record<ScheduleTuberia, string> = {
+  sch40:  'Sch 40 / STD',
+  sch80:  'Sch 80 / XH',
+  sch160: 'Sch 160',
+  xxh:    'XXH (doble extra pesado)',
+}
+
+/** Devuelve el ID real (mm) para un diámetro nominal en pulgadas y schedule dado.
+ *  Fallback a diámetro nominal × 25.4 si no está en tabla. */
+export function idRealMm(diametro_pulg: number, schedule: ScheduleTuberia = 'sch40'): number {
+  const tabla = ID_MM[schedule]
+  if (tabla[diametro_pulg] !== undefined) return tabla[diametro_pulg]
   return diametro_pulg * 25.4
 }
 
@@ -178,6 +193,7 @@ export interface ResultadoAGA3 {
   rho_kgm3: number       // densidad del gas en condiciones de flujo
   Re_D_max: number       // Reynolds en tubería a Qmax
   toma: string
+  schedule: ScheduleTuberia
   valido: boolean        // β dentro de rango AGA 3 (0.20–0.75)
   alerta?: string
   dp_objetivo_mbar: number
@@ -202,6 +218,7 @@ export function calcularAGA3(
   viscosidad_cp: number,
   p_base_kpa: number,
   t_base_c: number,
+  schedule: ScheduleTuberia = 'sch40',
 ): ResultadoAGA3 {
   const Pf_kpa = presion_kgcm2 * 98.0665 + 101.325
   const Tf_k   = tamb_c + 273.15
@@ -219,7 +236,7 @@ export function calcularAGA3(
   const rho = (sg * 28.97 * Pf_kpa) / (Zf * 8.31446 * Tf_k)
   const mu  = viscosidad_cp * 1e-3  // Pa·s
 
-  const D_mm = idRealMm(diametro_pulg)   // ID real Sch 40 (ASME B36.10M)
+  const D_mm = idRealMm(diametro_pulg, schedule)   // ID real ASME B36.10M
   const D_m  = D_mm / 1000
   const A_D  = Math.PI / 4 * D_m * D_m
 
@@ -295,6 +312,7 @@ export function calcularAGA3(
     rho_kgm3:      Math.round(rho * 1000) / 1000,
     Re_D_max:      Math.round(ReD),
     toma:          tapaLabel,
+    schedule,
     valido:        !fuera_rango,
     alerta,
     dp_objetivo_mbar: 250,

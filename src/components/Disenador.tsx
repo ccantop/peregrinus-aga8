@@ -6,7 +6,7 @@ import PID from './PID'
 import dynamic from 'next/dynamic'
 const Vista3D = dynamic(() => import('./Vista3D'), { ssr: false })
 import { seleccionarTecnologia } from '@/lib/engine/seleccion-tecnologia'
-import { calcularCondicionesFisicas, calcularAGA8, calcularAGA3, calcularAGA7, type ResultadoAGA3, type ResultadoAGA7 } from '@/lib/engine/calculo-z'
+import { calcularCondicionesFisicas, calcularAGA8, calcularAGA3, calcularAGA7, SCHEDULE_LABELS, type ResultadoAGA3, type ResultadoAGA7, type ScheduleTuberia } from '@/lib/engine/calculo-z'
 import TarjetaAGA3 from './TarjetaAGA3'
 import TarjetaAGA7 from './TarjetaAGA7'
 import TarjetaCoriolis from './TarjetaCoriolis'
@@ -101,6 +101,7 @@ export default function Disenador({ initialData }: { initialData?: InitialData |
     dp_regulador_bar: f1.dp_regulador_bar ?? DEFAULT_ADV.dp_regulador_bar,
   } : DEFAULT_ADV)
 
+  const [schedule, setSchedule] = useState<ScheduleTuberia>('sch40')
   const [advOpen, setAdvOpen] = useState(false)
   const [resultado, setResultado] = useState<Resultado | null>(null)
   const [tab, setTab] = useState<'pid' | '3d' | 'actividades'>('pid')
@@ -129,7 +130,7 @@ export default function Disenador({ initialData }: { initialData?: InitialData |
           datos.presion_kgcm2, adv.tamb_min_c,
           adv.sg, Zf, datos.diametro_pulg,
           adv.toma_diferencial, adv.viscosidad_cp,
-          adv.p_base_kpa, adv.t_base_c,
+          adv.p_base_kpa, adv.t_base_c, schedule,
         )
       : null
     const aga7 = (tech.key === 'turbina' || tech.key === 'ultrasonico')
@@ -157,7 +158,7 @@ export default function Disenador({ initialData }: { initialData?: InitialData |
               datos.qmax, datos.qnorm, datos.qmin,
               datos.presion_kgcm2, adv.tamb_min_c,
               adv.sg, aga8.z, datos.diametro_pulg, adv.toma_diferencial,
-              adv.viscosidad_cp, adv.p_base_kpa, adv.t_base_c,
+              adv.viscosidad_cp, adv.p_base_kpa, adv.t_base_c, schedule,
             )
           : prev.aga3
         const aga7Updated = (prev.tech.key === 'turbina' || prev.tech.key === 'ultrasonico')
@@ -386,6 +387,14 @@ export default function Disenador({ initialData }: { initialData?: InitialData |
                   <option value="brida">Brida (flange tap)</option>
                   <option value="esquina">Esquina (corner tap)</option>
                   <option value="ddmedio">D y D/2 (pipe tap)</option>
+                </select>
+
+                <label className={label}>Schedule de tubería (solo orificio/diafragma)</label>
+                <select className={field} value={schedule}
+                  onChange={e => setSchedule(e.target.value as ScheduleTuberia)}>
+                  {(Object.entries(SCHEDULE_LABELS) as [ScheduleTuberia, string][]).map(([k, v]) => (
+                    <option key={k} value={k}>{v}</option>
+                  ))}
                 </select>
 
                 <div className="grid grid-cols-2 gap-2">

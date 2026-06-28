@@ -290,6 +290,7 @@ export interface DatosMemoria {
     rho_kgm3: number
     Re_D_max: number
     toma: string
+    schedule: string
     valido: boolean
     alerta?: string
     dp_objetivo_mbar: number
@@ -687,7 +688,7 @@ export function MemoriaCalculoPDF({ d }: { d: DatosMemoria }) {
               </View>
             )}
             <Text style={[s.body, { fontSize: 7, color: C.ink3, marginBottom: 4 }]}>
-              Diámetro interno (D) tomado de tabla ASME B36.10M Schedule 40. Si el proyecto usa otro schedule o material, el β real diferirá.
+              Diámetro interno (D) tomado de tabla ASME B36.10M {aga3.schedule === 'sch40' ? 'Sch 40 / STD' : aga3.schedule === 'sch80' ? 'Sch 80 / XH' : aga3.schedule === 'sch160' ? 'Sch 160' : 'XXH'}. Si el proyecto usa otro schedule o material, el β real diferirá.
               Para custodia fiscal, el cálculo debe realizarse con el ID medido en campo y la ecuación completa AGA 3 Part 2 + AGA 8 DETAIL.
             </Text>
           </>

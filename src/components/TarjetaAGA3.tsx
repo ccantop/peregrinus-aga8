@@ -1,6 +1,6 @@
 'use client'
 
-import type { ResultadoAGA3 } from '@/lib/engine/calculo-z'
+import { SCHEDULE_LABELS, type ResultadoAGA3 } from '@/lib/engine/calculo-z'
 
 interface Props {
   aga3: ResultadoAGA3
@@ -54,7 +54,7 @@ export default function TarjetaAGA3({ aga3, qmin, qnorm, qmax }: Props) {
 
       {/* chips principales */}
       <div className="flex flex-wrap gap-2 mb-4">
-        {chip('D (tubería)', `${aga3.D_mm} mm`, false)}
+        {chip('D (tubería)', `${aga3.D_mm} mm — ${SCHEDULE_LABELS[aga3.schedule]}`, false)}
         {chip('d (orificio)', `${aga3.d_mm} mm`, true)}
         {chip('Cd', aga3.Cd.toFixed(4), false)}
         {chip('Ev', aga3.Ev.toFixed(4), false)}
@@ -99,7 +99,7 @@ export default function TarjetaAGA3({ aga3, qmin, qnorm, qmax }: Props) {
       )}
 
       <p className="text-[10px] mt-3" style={{ color: 'var(--ink3)' }}>
-        D tomado de ASME B36.10M Sch 40. ΔP objetivo = {aga3.dp_objetivo_mbar} mbar a Qmáx.
+        D tomado de ASME B36.10M {SCHEDULE_LABELS[aga3.schedule]}. ΔP objetivo = {aga3.dp_objetivo_mbar} mbar a Qmáx.
         Screening — verificar con ID medido en campo para cómputo fiscal.
       </p>
     </div>
