@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { renderToBuffer } from '@react-pdf/renderer'
 import React from 'react'
 import { ReportePDF } from '@/lib/pdf/reporte-pdf'
+import { getLogoSrc } from '@/lib/pdf/logo'
 
 export async function GET(req: NextRequest) {
   const id = req.nextUrl.searchParams.get('id')
@@ -18,7 +19,8 @@ export async function GET(req: NextRequest) {
   if (!proyecto || !f1) return NextResponse.json({ error: 'Proyecto no encontrado' }, { status: 404 })
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const element = React.createElement(ReportePDF, { d: { proyecto, f1, actividades: acts ?? [] } }) as any
+  const logoSrc = await getLogoSrc()
+  const element = React.createElement(ReportePDF, { d: { logoSrc, proyecto, f1, actividades: acts ?? [] } }) as any
   const buf = await renderToBuffer(element)
   const bytes = new Uint8Array(buf)
 

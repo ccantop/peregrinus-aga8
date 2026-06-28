@@ -1,14 +1,5 @@
 import React from 'react'
-import fs from 'fs'
-import path from 'path'
 import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer'
-
-const LOGO_SRC = (() => {
-  try {
-    const buf = fs.readFileSync(path.join(process.cwd(), 'public', 'logo.png'))
-    return `data:image/png;base64,${buf.toString('base64')}`
-  } catch { return '' }
-})()
 import { TIPO_LABEL } from '@/lib/instrumentos'
 
 const C = {
@@ -84,7 +75,7 @@ function Sec({ title, children }: { title: string; children: React.ReactNode }) 
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function HojaDatosPDF({ proyecto, f1, hoja }: { proyecto: any; f1: any; hoja: any }) {
+export function HojaDatosPDF({ proyecto, f1, hoja, logoSrc }: { proyecto: any; f1: any; hoja: any; logoSrc?: string }) {
   const fecha = new Date(hoja.actualizado_en ?? hoja.creado_en).toLocaleDateString('es-MX', {
     day: '2-digit', month: 'short', year: 'numeric',
   }).toUpperCase()
@@ -101,7 +92,7 @@ export function HojaDatosPDF({ proyecto, f1, hoja }: { proyecto: any; f1: any; h
         <View style={s.header}>
           <View>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-              {LOGO_SRC ? <Image src={LOGO_SRC} style={{ width: 26, height: 26 }} /> : null}
+              {logoSrc ? <Image src={logoSrc} style={{ width: 26, height: 26 }} /> : null}
               <View>
                 <Text style={s.logoTxt}>PEREGRIN</Text>
                 <Text style={s.logoSub}>GAS ENGINEERING EXPERTS</Text>

@@ -4,18 +4,9 @@
  */
 
 import React from 'react'
-import fs from 'fs'
-import path from 'path'
 import {
   Document, Page, Text, View, StyleSheet, Font, Image,
 } from '@react-pdf/renderer'
-
-const LOGO_SRC = (() => {
-  try {
-    const buf = fs.readFileSync(path.join(process.cwd(), 'public', 'logo.png'))
-    return `data:image/png;base64,${buf.toString('base64')}`
-  } catch { return '' }
-})()
 
 // ─── paleta ──────────────────────────────────────────────────────────────────
 const C = {
@@ -117,6 +108,7 @@ const ESTADO_LABEL: Record<string, string> = {
 // ─── tipos ────────────────────────────────────────────────────────────────────
 
 export interface DatosReporte {
+  logoSrc?: string
   proyecto: {
     id: string
     nombre: string
@@ -198,7 +190,7 @@ export function ReportePDF({ d }: { d: DatosReporte }) {
         <View style={s.header}>
           <View style={s.logoBox}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-              {LOGO_SRC ? <Image src={LOGO_SRC} style={{ width: 26, height: 26 }} /> : null}
+              {d.logoSrc ? <Image src={d.logoSrc} style={{ width: 26, height: 26 }} /> : null}
               <View>
                 <Text style={s.logoTxt}>PEREGRIN</Text>
                 <Text style={s.logoSub}>GAS ENGINEERING EXPERTS</Text>
@@ -293,7 +285,7 @@ export function ReportePDF({ d }: { d: DatosReporte }) {
         <View style={s.header}>
           <View style={s.logoBox}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-              {LOGO_SRC ? <Image src={LOGO_SRC} style={{ width: 26, height: 26 }} /> : null}
+              {d.logoSrc ? <Image src={d.logoSrc} style={{ width: 26, height: 26 }} /> : null}
               <View>
                 <Text style={s.logoTxt}>PEREGRIN</Text>
                 <Text style={s.logoSub}>GAS ENGINEERING EXPERTS</Text>

@@ -4,6 +4,7 @@ import { renderToBuffer } from '@react-pdf/renderer'
 import React from 'react'
 import { HojaDatosPDF } from '@/lib/pdf/hoja-datos-pdf'
 import { getInstrumentosBase } from '@/lib/instrumentos'
+import { getLogoSrc } from '@/lib/pdf/logo'
 
 export async function GET(req: NextRequest) {
   const id  = req.nextUrl.searchParams.get('id')
@@ -45,7 +46,8 @@ export async function GET(req: NextRequest) {
   })()
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const element = React.createElement(HojaDatosPDF, { proyecto, f1, hoja: hojaEfectiva }) as any
+  const logoSrc = await getLogoSrc()
+  const element = React.createElement(HojaDatosPDF, { proyecto, f1, hoja: hojaEfectiva, logoSrc }) as any
   const buf = await renderToBuffer(element)
 
   const slug = tag.toLowerCase().replace(/[^a-z0-9]/g, '-')

@@ -1,14 +1,6 @@
 import React from 'react'
-import fs from 'fs'
-import path from 'path'
 import { Document, Page, Text, View, StyleSheet, Svg, Rect, Line, Circle, Text as SvgText, Image } from '@react-pdf/renderer'
-
-const LOGO_SRC = (() => {
-  try {
-    const buf = fs.readFileSync(path.join(process.cwd(), 'public', 'logo.png'))
-    return `data:image/png;base64,${buf.toString('base64')}`
-  } catch { return '' }
-})()
+export { getLogoSrc } from './logo'
 
 const C = {
   accent: '#4a9ebb', ink: '#1b3044', ink2: '#3a5a72', ink3: '#8aaabb',
@@ -265,6 +257,7 @@ function ComposicionChart({ sg, co2_pct, n2_pct, composicion }: {
 // ─── props ────────────────────────────────────────────────────────────────────
 
 export interface DatosMemoria {
+  logoSrc?: string
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   proyecto: any
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -361,7 +354,7 @@ export function MemoriaCalculoPDF({ d }: { d: DatosMemoria }) {
         <View style={s.header}>
           <View>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-              {LOGO_SRC ? <Image src={LOGO_SRC} style={{ width: 26, height: 26 }} /> : null}
+              {d.logoSrc ? <Image src={d.logoSrc} style={{ width: 26, height: 26 }} /> : null}
               <View>
                 <Text style={s.logoTxt}>PEREGRIN</Text>
                 <Text style={s.logoSub}>GAS ENGINEERING EXPERTS</Text>
@@ -411,7 +404,7 @@ export function MemoriaCalculoPDF({ d }: { d: DatosMemoria }) {
         <View style={s.header}>
           <View>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-              {LOGO_SRC ? <Image src={LOGO_SRC} style={{ width: 26, height: 26 }} /> : null}
+              {d.logoSrc ? <Image src={d.logoSrc} style={{ width: 26, height: 26 }} /> : null}
               <View>
                 <Text style={s.logoTxt}>PEREGRIN</Text>
                 <Text style={s.logoSub}>GAS ENGINEERING EXPERTS</Text>

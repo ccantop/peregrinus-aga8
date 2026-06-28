@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import React from 'react'
 import { renderToBuffer } from '@react-pdf/renderer'
 import { createClient } from '@/lib/supabase/server'
-import { MemoriaCalculoPDF, type DatosMemoria } from '@/lib/pdf/memoria-calculo-pdf'
+import { MemoriaCalculoPDF, getLogoSrc, type DatosMemoria } from '@/lib/pdf/memoria-calculo-pdf'
 import { calcularCondicionesFisicas, calcularAGA7, calcularAGA3 } from '@/lib/engine/calculo-z'
 
 export async function GET(req: NextRequest) {
@@ -95,6 +95,7 @@ export async function GET(req: NextRequest) {
     },
   }
 
+  d.logoSrc = await getLogoSrc()
   const element = React.createElement(MemoriaCalculoPDF, { d }) as React.ReactElement
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const buf = await renderToBuffer(element as any)

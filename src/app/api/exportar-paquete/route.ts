@@ -5,6 +5,7 @@ import { PDFDocument, PageSizes } from 'pdf-lib'
 import sharp from 'sharp'
 import { createClient } from '@/lib/supabase/server'
 import { MemoriaCalculoPDF, type DatosMemoria } from '@/lib/pdf/memoria-calculo-pdf'
+import { getLogoSrc } from '@/lib/pdf/logo'
 import { ReportePDF } from '@/lib/pdf/reporte-pdf'
 import { calcularCondicionesFisicas, calcularAGA7, calcularAGA3 } from '@/lib/engine/calculo-z'
 import { generarPIDSvg } from '@/lib/pdf/pid-svg'
@@ -143,9 +144,11 @@ export async function GET(req: NextRequest) {
   }
 
   // Generar los dos PDFs en paralelo
+  const logoSrc = await getLogoSrc()
+  dMemoria.logoSrc = logoSrc
   const [memoriaBuffer, reporteBuffer] = await Promise.all([
     renderToBuffer(React.createElement(MemoriaCalculoPDF, { d: dMemoria }) as never),
-    renderToBuffer(React.createElement(ReportePDF, { d: { proyecto, f1, actividades: acts ?? [] } }) as never),
+    renderToBuffer(React.createElement(ReportePDF, { d: { logoSrc, proyecto, f1, actividades: acts ?? [] } }) as never),
   ])
 
   // Fusionar con pdf-lib
