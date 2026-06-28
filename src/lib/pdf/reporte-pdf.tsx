@@ -5,7 +5,7 @@
 
 import React from 'react'
 import {
-  Document, Page, Text, View, StyleSheet, Font,
+  Document, Page, Text, View, StyleSheet, Font, Image,
 } from '@react-pdf/renderer'
 
 // ─── paleta ──────────────────────────────────────────────────────────────────
@@ -188,8 +188,9 @@ export function ReportePDF({ d }: { d: DatosReporte }) {
         {/* Encabezado */}
         <View style={s.header}>
           <View style={s.logoBox}>
+            <Image src={`${process.cwd()}/public/logo.png`} style={{ width: 22, height: 22, marginBottom: 2 }} />
             <Text style={s.logoTxt}>PEREGRIN</Text>
-            <Text style={s.logoSub}>INGENIERIA NORMATIVA DE ESTACIONES DE MEDICION</Text>
+            <Text style={s.logoSub}>GAS ENGINEERING EXPERTS</Text>
           </View>
           <View style={s.headerR}>
             <Text style={s.badge}>REPORTE TECNICO</Text>
@@ -278,8 +279,9 @@ export function ReportePDF({ d }: { d: DatosReporte }) {
       <Page size="A4" style={s.page}>
         <View style={s.header}>
           <View style={s.logoBox}>
+            <Image src={`${process.cwd()}/public/logo.png`} style={{ width: 22, height: 22, marginBottom: 2 }} />
             <Text style={s.logoTxt}>PEREGRIN</Text>
-            <Text style={s.logoSub}>INGENIERIA NORMATIVA DE ESTACIONES DE MEDICION</Text>
+            <Text style={s.logoSub}>GAS ENGINEERING EXPERTS</Text>
           </View>
           <View style={s.headerR}>
             <Text style={s.badge}>REPORTE TECNICO  |  PAG 2</Text>

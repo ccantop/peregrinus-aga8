@@ -36,7 +36,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                   PEREGRIN
                 </span>
                 <span className="text-[9px] tracking-wide mt-0.5" style={{ color: 'var(--ink3)', letterSpacing: '0.05em' }}>
-                  Gas Engineering &amp; Construction Experts
+                  Gas Engineering Experts
                 </span>
               </div>
             </Link>

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Document, Page, Text, View, StyleSheet, Svg, Rect, Line, Circle, Text as SvgText } from '@react-pdf/renderer'
+import { Document, Page, Text, View, StyleSheet, Svg, Rect, Line, Circle, Text as SvgText, Image } from '@react-pdf/renderer'
 
 const C = {
   accent: '#4a9ebb', ink: '#1b3044', ink2: '#3a5a72', ink3: '#8aaabb',
@@ -166,18 +166,17 @@ function JTChart({ tamb, t_salida, dew_agua, dew_hc }: {
       <Line x1={xDewA} y1={bY} x2={xDewA} y2={bY + 9} stroke="rgba(184,64,48,0.25)" strokeWidth={0.8} />
       <Line x1={xDewH} y1={bY} x2={xDewH} y2={bY + 9} stroke="rgba(193,127,36,0.25)" strokeWidth={0.8} />
 
-      {/* ARRIBA: T operacion — "T" alineada al centro del círculo azul */}
-      <SvgText x={xAmb - R} y={trackY - 6} style={{ fontSize: 7, fill: C.accent }} textAnchor="start">{`T operacion  ${tamb.toFixed(1)}C`}</SvgText>
+      {/* ARRIBA — T operacion (izq) y T salida (der del círculo) */}
+      <SvgText x={xAmb - R} y={trackY - 14} style={{ fontSize: 6.5, fill: C.accent }} textAnchor="start">{`T operacion`}</SvgText>
+      <SvgText x={xAmb - R} y={trackY - 5}  style={{ fontSize: 7.5, fill: C.accent }} textAnchor="start">{`${tamb.toFixed(1)} C`}</SvgText>
+      <SvgText x={xSal + R} y={trackY - 14} style={{ fontSize: 6.5, fill: salCol }} textAnchor="end">{margenOk ? 'T salida — OK' : 'T salida — RIESGO HIDRATO'}</SvgText>
+      <SvgText x={xSal + R} y={trackY - 5}  style={{ fontSize: 7.5, fill: salCol }} textAnchor="end">{`${t_salida.toFixed(1)} C  (dT ${deltaT} C)`}</SvgText>
 
-      {/* ABAJO — Rocio H2O: etiqueta + valor en una línea, centrado */}
+      {/* ABAJO — solo rocíos, siempre separados del track */}
       <SvgText x={xDewA} y={bY + 13} style={{ fontSize: 6.5, fill: C.danger }} textAnchor="middle">Rocio H2O</SvgText>
-      <SvgText x={xDewA} y={bY + 22} style={{ fontSize: 7.5, fill: C.danger }} textAnchor="middle">{dew_agua.toFixed(1)}C</SvgText>
-      {/* ABAJO — Rocio HC */}
+      <SvgText x={xDewA} y={bY + 22} style={{ fontSize: 7.5, fill: C.danger }} textAnchor="middle">{dew_agua.toFixed(1)} C</SvgText>
       <SvgText x={xDewH} y={bY + 13} style={{ fontSize: 6.5, fill: C.warn }}   textAnchor="middle">Rocio HC</SvgText>
-      <SvgText x={xDewH} y={bY + 22} style={{ fontSize: 7.5, fill: C.warn }}   textAnchor="middle">{dew_hc.toFixed(1)}C</SvgText>
-      {/* ABAJO — T salida: etiqueta+valor en línea 1, estado en línea 2, inicio en borde izq del círculo */}
-      <SvgText x={xSal - R} y={bY + 13} style={{ fontSize: 6.5, fill: salCol }} textAnchor="start">{`T salida regulador  ${t_salida.toFixed(1)}C  (dT ${deltaT}C)`}</SvgText>
-      <SvgText x={xSal - R} y={bY + 23} style={{ fontSize: 7, fill: salCol }}   textAnchor="start">{margenOk ? 'OK — margen suficiente' : 'RIESGO DE HIDRATO'}</SvgText>
+      <SvgText x={xDewH} y={bY + 22} style={{ fontSize: 7.5, fill: C.warn }}   textAnchor="middle">{dew_hc.toFixed(1)} C</SvgText>
     </Svg>
   )
 }
@@ -352,8 +351,9 @@ export function MemoriaCalculoPDF({ d }: { d: DatosMemoria }) {
       <Page size="A4" style={s.page}>
         <View style={s.header}>
           <View>
+            <Image src={`${process.cwd()}/public/logo.png`} style={{ width: 22, height: 22, marginBottom: 2 }} />
             <Text style={s.logoTxt}>PEREGRIN</Text>
-            <Text style={s.logoSub}>INGENIERIA NORMATIVA DE ESTACIONES DE MEDICION</Text>
+            <Text style={s.logoSub}>GAS ENGINEERING EXPERTS</Text>
           </View>
           <Text style={s.badge}>MEMORIA DE CALCULO</Text>
         </View>
@@ -397,8 +397,9 @@ export function MemoriaCalculoPDF({ d }: { d: DatosMemoria }) {
       <Page size="A4" style={s.page}>
         <View style={s.header}>
           <View>
+            <Image src={`${process.cwd()}/public/logo.png`} style={{ width: 22, height: 22, marginBottom: 2 }} />
             <Text style={s.logoTxt}>PEREGRIN</Text>
-            <Text style={s.logoSub}>INGENIERIA NORMATIVA DE ESTACIONES DE MEDICION</Text>
+            <Text style={s.logoSub}>GAS ENGINEERING EXPERTS</Text>
           </View>
           <View style={{ flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
             <Text style={s.badge}>MEMORIA DE CALCULO</Text>
