@@ -111,7 +111,8 @@ export default async function PuestaEnMarchaPage({
       </div>
 
       {/* encabezado */}
-      <div className="mb-6">
+      <div className="flex items-start justify-between mb-6">
+        <div>
         <h1 className="text-xl font-semibold" style={{ color: 'var(--ink)' }}>Puesta en marcha</h1>
         <p className="text-xs mt-1" style={{ color: 'var(--ink3)' }}>
           {proyecto.nombre}
@@ -119,6 +120,12 @@ export default async function PuestaEnMarchaPage({
           {esCityGate && ' · City Gate SISTRANGAS/CENAGAS'}
           {' — '}NOM-020-ASEA-2024
         </p>
+        </div>
+        <Link href={`/proyectos/${id}`}
+          className="text-xs px-3 py-1.5 rounded border hover:opacity-80 transition-opacity"
+          style={{ color: 'var(--accent)', borderColor: 'var(--accent)', whiteSpace: 'nowrap' }}>
+          ← Volver al proyecto
+        </Link>
       </div>
 
       {/* aviso legal */}
