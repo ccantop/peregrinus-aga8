@@ -110,6 +110,10 @@ function buildUltrasonico(scene: THREE.Object3D, r: number) {
 // ── ORIFICIO ──────────────────────────────────────────────────────────────────
 // Plato de orificio bien visible entre dos bridas gruesas, con manifold ΔP
 function buildOrificio(scene: THREE.Object3D, r: number) {
+  // segmentos de tubo a cada lado de las bridas
+  seg(scene, -1.1, -0.07, r)
+  seg(scene, 0.07, 1.1, r)
+
   // bridas de orificio — más gruesas
   for (const x of [-0.07, 0.07]) {
     const f = new THREE.Mesh(
