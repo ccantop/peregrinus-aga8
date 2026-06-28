@@ -4,12 +4,18 @@
  */
 
 import React from 'react'
+import fs from 'fs'
 import path from 'path'
 import {
   Document, Page, Text, View, StyleSheet, Font, Image,
 } from '@react-pdf/renderer'
 
-const LOGO_PATH = path.join(process.cwd(), 'public', 'logo.png')
+const LOGO_SRC = (() => {
+  try {
+    const buf = fs.readFileSync(path.join(process.cwd(), 'public', 'logo.png'))
+    return `data:image/png;base64,${buf.toString('base64')}`
+  } catch { return '' }
+})()
 
 // ─── paleta ──────────────────────────────────────────────────────────────────
 const C = {
@@ -191,7 +197,7 @@ export function ReportePDF({ d }: { d: DatosReporte }) {
         {/* Encabezado */}
         <View style={s.header}>
           <View style={s.logoBox}>
-            <Image src={LOGO_PATH} style={{ width: 22, height: 22, marginBottom: 2 }} />
+            {LOGO_SRC ? <Image src={LOGO_SRC} style={{ width: 22, height: 22, marginBottom: 2 }} /> : null}
             <Text style={s.logoTxt}>PEREGRIN</Text>
             <Text style={s.logoSub}>GAS ENGINEERING EXPERTS</Text>
           </View>
@@ -282,7 +288,7 @@ export function ReportePDF({ d }: { d: DatosReporte }) {
       <Page size="A4" style={s.page}>
         <View style={s.header}>
           <View style={s.logoBox}>
-            <Image src={LOGO_PATH} style={{ width: 22, height: 22, marginBottom: 2 }} />
+            {LOGO_SRC ? <Image src={LOGO_SRC} style={{ width: 22, height: 22, marginBottom: 2 }} /> : null}
             <Text style={s.logoTxt}>PEREGRIN</Text>
             <Text style={s.logoSub}>GAS ENGINEERING EXPERTS</Text>
           </View>
