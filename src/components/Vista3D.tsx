@@ -430,7 +430,7 @@ export default function Vista3D({ techKey, diametroPulg }: Vista3DProps) {
 
     // El eje de la tubería queda en y=r (fondo en y=0, sobre el grid)
     const assembly = new THREE.Group()
-    assembly.position.y = r * 1.05
+    assembly.position.y = r * 2.2
     scene.add(assembly)
 
     // Tubería de entrada/salida (centrada en x=0)
@@ -498,6 +498,15 @@ export default function Vista3D({ techKey, diametroPulg }: Vista3DProps) {
         className="w-full rounded-md"
         style={{ height: 400, background: '#070908', cursor: 'grab' }}
       />
+      {/* logo overlay */}
+      <div className="absolute top-3 left-3 flex items-center gap-1.5">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/logo.png" alt="Peregrin" className="w-6 h-6 object-contain" style={{ filter: 'brightness(0) invert(1)', opacity: 0.7 }} />
+        <div className="flex flex-col leading-none">
+          <span className="font-bold text-[10px] tracking-widest" style={{ color: 'rgba(255,255,255,0.8)', letterSpacing: '0.15em' }}>PEREGRIN</span>
+          <span className="text-[7px]" style={{ color: 'rgba(255,255,255,0.45)' }}>Gas Engineering Experts</span>
+        </div>
+      </div>
       <div className="absolute bottom-3 left-3 font-mono text-[10px] px-2 py-1 rounded"
         style={{ background: 'rgba(0,0,0,0.6)', color: 'var(--accent)', border: '1px solid rgba(159,209,58,0.3)' }}>
         {LABELS[techKey]}
