@@ -197,9 +197,13 @@ export function ReportePDF({ d }: { d: DatosReporte }) {
         {/* Encabezado */}
         <View style={s.header}>
           <View style={s.logoBox}>
-            {LOGO_SRC ? <Image src={LOGO_SRC} style={{ width: 22, height: 22, marginBottom: 2 }} /> : null}
-            <Text style={s.logoTxt}>PEREGRIN</Text>
-            <Text style={s.logoSub}>GAS ENGINEERING EXPERTS</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              {LOGO_SRC ? <Image src={LOGO_SRC} style={{ width: 26, height: 26 }} /> : null}
+              <View>
+                <Text style={s.logoTxt}>PEREGRIN</Text>
+                <Text style={s.logoSub}>GAS ENGINEERING EXPERTS</Text>
+              </View>
+            </View>
           </View>
           <View style={s.headerR}>
             <Text style={s.badge}>REPORTE TECNICO</Text>
@@ -288,9 +292,13 @@ export function ReportePDF({ d }: { d: DatosReporte }) {
       <Page size="A4" style={s.page}>
         <View style={s.header}>
           <View style={s.logoBox}>
-            {LOGO_SRC ? <Image src={LOGO_SRC} style={{ width: 22, height: 22, marginBottom: 2 }} /> : null}
-            <Text style={s.logoTxt}>PEREGRIN</Text>
-            <Text style={s.logoSub}>GAS ENGINEERING EXPERTS</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              {LOGO_SRC ? <Image src={LOGO_SRC} style={{ width: 26, height: 26 }} /> : null}
+              <View>
+                <Text style={s.logoTxt}>PEREGRIN</Text>
+                <Text style={s.logoSub}>GAS ENGINEERING EXPERTS</Text>
+              </View>
+            </View>
           </View>
           <View style={s.headerR}>
             <Text style={s.badge}>REPORTE TECNICO  |  PAG 2</Text>

@@ -360,9 +360,13 @@ export function MemoriaCalculoPDF({ d }: { d: DatosMemoria }) {
       <Page size="A4" style={s.page}>
         <View style={s.header}>
           <View>
-            {LOGO_SRC ? <Image src={LOGO_SRC} style={{ width: 22, height: 22, marginBottom: 2 }} /> : null}
-            <Text style={s.logoTxt}>PEREGRIN</Text>
-            <Text style={s.logoSub}>GAS ENGINEERING EXPERTS</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              {LOGO_SRC ? <Image src={LOGO_SRC} style={{ width: 26, height: 26 }} /> : null}
+              <View>
+                <Text style={s.logoTxt}>PEREGRIN</Text>
+                <Text style={s.logoSub}>GAS ENGINEERING EXPERTS</Text>
+              </View>
+            </View>
           </View>
           <Text style={s.badge}>MEMORIA DE CALCULO</Text>
         </View>
@@ -406,9 +410,13 @@ export function MemoriaCalculoPDF({ d }: { d: DatosMemoria }) {
       <Page size="A4" style={s.page}>
         <View style={s.header}>
           <View>
-            {LOGO_SRC ? <Image src={LOGO_SRC} style={{ width: 22, height: 22, marginBottom: 2 }} /> : null}
-            <Text style={s.logoTxt}>PEREGRIN</Text>
-            <Text style={s.logoSub}>GAS ENGINEERING EXPERTS</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              {LOGO_SRC ? <Image src={LOGO_SRC} style={{ width: 26, height: 26 }} /> : null}
+              <View>
+                <Text style={s.logoTxt}>PEREGRIN</Text>
+                <Text style={s.logoSub}>GAS ENGINEERING EXPERTS</Text>
+              </View>
+            </View>
           </View>
           <View style={{ flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
             <Text style={s.badge}>MEMORIA DE CALCULO</Text>

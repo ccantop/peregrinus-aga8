@@ -100,9 +100,13 @@ export function HojaDatosPDF({ proyecto, f1, hoja }: { proyecto: any; f1: any; h
         {/* Encabezado */}
         <View style={s.header}>
           <View>
-            {LOGO_SRC ? <Image src={LOGO_SRC} style={{ width: 22, height: 22, marginBottom: 2 }} /> : null}
-            <Text style={s.logoTxt}>PEREGRIN</Text>
-            <Text style={s.logoSub}>GAS ENGINEERING EXPERTS</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              {LOGO_SRC ? <Image src={LOGO_SRC} style={{ width: 26, height: 26 }} /> : null}
+              <View>
+                <Text style={s.logoTxt}>PEREGRIN</Text>
+                <Text style={s.logoSub}>GAS ENGINEERING EXPERTS</Text>
+              </View>
+            </View>
           </View>
           <View style={s.headerR}>
             <Text style={s.badge}>HOJA DE DATOS ISA/IEC</Text>
