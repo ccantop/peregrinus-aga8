@@ -42,12 +42,12 @@ export function seleccionarTecnologia(datos: DatosProceso): ResultadoTecnologia 
     return make('orificio', `Rango de medición bajo (${td}:1) y caudal estable — solución fiscal de menor costo de mantenimiento.`)
   }
 
-  if (turndown > 10 && turndown <= 30) {
-    return make('turbina', `Rango de medición de ${td}:1 — buen balance de exactitud y mantenimiento para industrial/interconexión media presión.`)
-  }
-
   if (!fiscal && turndown > 20) {
     return make('diafragma', `Uso final no fiscal, rango de medición de ${td}:1 — diafragma cubre el rango sin necesidad de exactitud fiscal.`)
+  }
+
+  if (turndown > 10 && turndown <= 30) {
+    return make('turbina', `Rango de medición de ${td}:1 — buen balance de exactitud y mantenimiento para industrial/interconexión media presión.`)
   }
 
   return make('ultrasonico', `Configuración por defecto de mayor versatilidad para el rango ingresado (${td}:1).`)
