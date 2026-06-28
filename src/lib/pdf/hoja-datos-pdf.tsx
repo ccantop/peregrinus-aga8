@@ -1,5 +1,8 @@
 import React from 'react'
+import path from 'path'
 import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer'
+
+const LOGO_PATH = path.join(process.cwd(), 'public', 'logo.png')
 import { TIPO_LABEL } from '@/lib/instrumentos'
 
 const C = {
@@ -91,7 +94,7 @@ export function HojaDatosPDF({ proyecto, f1, hoja }: { proyecto: any; f1: any; h
         {/* Encabezado */}
         <View style={s.header}>
           <View>
-            <Image src={`${process.cwd()}/public/logo.png`} style={{ width: 22, height: 22, marginBottom: 2 }} />
+            <Image src={LOGO_PATH} style={{ width: 22, height: 22, marginBottom: 2 }} />
             <Text style={s.logoTxt}>PEREGRIN</Text>
             <Text style={s.logoSub}>GAS ENGINEERING EXPERTS</Text>
           </View>

@@ -1,5 +1,8 @@
 import React from 'react'
+import path from 'path'
 import { Document, Page, Text, View, StyleSheet, Svg, Rect, Line, Circle, Text as SvgText, Image } from '@react-pdf/renderer'
+
+const LOGO_PATH = path.join(process.cwd(), 'public', 'logo.png')
 
 const C = {
   accent: '#4a9ebb', ink: '#1b3044', ink2: '#3a5a72', ink3: '#8aaabb',
@@ -351,7 +354,7 @@ export function MemoriaCalculoPDF({ d }: { d: DatosMemoria }) {
       <Page size="A4" style={s.page}>
         <View style={s.header}>
           <View>
-            <Image src={`${process.cwd()}/public/logo.png`} style={{ width: 22, height: 22, marginBottom: 2 }} />
+            <Image src={LOGO_PATH} style={{ width: 22, height: 22, marginBottom: 2 }} />
             <Text style={s.logoTxt}>PEREGRIN</Text>
             <Text style={s.logoSub}>GAS ENGINEERING EXPERTS</Text>
           </View>
@@ -397,7 +400,7 @@ export function MemoriaCalculoPDF({ d }: { d: DatosMemoria }) {
       <Page size="A4" style={s.page}>
         <View style={s.header}>
           <View>
-            <Image src={`${process.cwd()}/public/logo.png`} style={{ width: 22, height: 22, marginBottom: 2 }} />
+            <Image src={LOGO_PATH} style={{ width: 22, height: 22, marginBottom: 2 }} />
             <Text style={s.logoTxt}>PEREGRIN</Text>
             <Text style={s.logoSub}>GAS ENGINEERING EXPERTS</Text>
           </View>
