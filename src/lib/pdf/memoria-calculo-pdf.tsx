@@ -348,6 +348,51 @@ export function MemoriaCalculoPDF({ d }: { d: DatosMemoria }) {
   return (
     <Document title={`Memoria de cálculo — ${proyecto.nombre}`} author="Peregrin">
 
+      {/* ─── Índice ─── */}
+      <Page size="A4" style={s.page}>
+        <View style={s.header}>
+          <View>
+            <Text style={s.logoTxt}>PEREGRIN</Text>
+            <Text style={s.logoSub}>INGENIERIA NORMATIVA DE ESTACIONES DE MEDICION</Text>
+          </View>
+          <Text style={s.badge}>MEMORIA DE CALCULO</Text>
+        </View>
+        <View style={s.divider} />
+
+        <Text style={[s.docTitle, { marginTop: 6 }]}>Tabla de contenido</Text>
+        <Text style={[s.docSub, { marginBottom: 16 }]}>{proyecto.nombre}  ·  Borrador Rev. 0  ·  {fecha}</Text>
+
+        {[
+          { num: '1', titulo: 'Alcance y propósito' },
+          { num: '2', titulo: 'Datos de entrada del proceso' },
+          { num: '3', titulo: 'Rango de operación' },
+          { num: '4', titulo: 'Composición del gas' },
+          { num: '5', titulo: 'Cálculo del factor de compresibilidad Z (AGA 8)' },
+          { num: '6', titulo: 'Efecto Joule-Thomson en etapa de regulación' },
+          ...(aga7 ? [{ num: '7', titulo: 'Corrección a condiciones base — AGA 7' }] : []),
+          ...(aga3 ? [{ num: aga7 ? '8' : '7', titulo: 'Dimensionamiento de placa de orificio — AGA 3 / ISO 5167' }] : []),
+          { num: aga3 && aga7 ? '9' : aga3 || aga7 ? '8' : '7', titulo: 'Selección de tecnología de medición' },
+          { num: aga3 && aga7 ? '10' : aga3 || aga7 ? '9' : '8', titulo: 'Marco normativo aplicable' },
+          { num: aga3 && aga7 ? '11' : aga3 || aga7 ? '10' : '9', titulo: 'Conclusiones y próximos pasos' },
+        ].map((item, i) => (
+          <View key={i} style={{ flexDirection: 'row', alignItems: 'flex-end', marginBottom: 7, gap: 6 }}>
+            <Text style={{ fontSize: 8, fontFamily: 'Helvetica-Bold', color: C.accent, width: 16 }}>{item.num}.</Text>
+            <Text style={{ fontSize: 8.5, color: C.ink, flex: 1 }}>{item.titulo}</Text>
+            <View style={{ flex: 1, borderBottomWidth: 1, borderBottomColor: C.line, borderStyle: 'dotted', marginBottom: 2 }} />
+          </View>
+        ))}
+
+        <View style={{ marginTop: 20, padding: 8, borderRadius: 3, backgroundColor: 'rgba(74,158,187,0.06)', borderWidth: 1, borderColor: 'rgba(74,158,187,0.2)' }}>
+          <Text style={{ fontSize: 7, color: C.ink2, lineHeight: 1.5 }}>
+            Este documento es un borrador de ingeniería (Fase 1 — diseño de oficina). Los números de sección son
+            orientativos; las páginas específicas dependen del contenido generado para cada proyecto.
+            Requiere revisión y firma de ingeniero con cédula profesional antes de tener validez legal.
+          </Text>
+        </View>
+
+        <Footer />
+      </Page>
+
       {/* ─── Página 1: Portada + Alcance + Datos de entrada ─── */}
       <Page size="A4" style={s.page}>
         <View style={s.header}>
