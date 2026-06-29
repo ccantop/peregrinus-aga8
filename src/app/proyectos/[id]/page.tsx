@@ -90,108 +90,97 @@ export default async function ProyectoDetallePage({
         <span>{proyecto.nombre}</span>
       </div>
 
-      {/* encabezado */}
-      <div className="flex items-start justify-between gap-4 mb-7">
-        <div>
-          <div className="flex items-center gap-2 flex-wrap">
-            <h1 className="text-xl font-semibold" style={{ color: 'var(--ink)' }}>
-              {proyecto.nombre}
-            </h1>
-            {f1?.fiscal && (
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded"
-                style={{ background: 'rgba(74,158,187,0.10)', color: 'var(--accent)', border: '1px solid rgba(74,158,187,0.3)' }}>
-                FISCAL
-              </span>
-            )}
-            <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded"
-              style={{ background: 'rgba(0,0,0,0.04)', color: 'var(--ink3)', border: '1px solid var(--line)' }}>
-              {proyecto.fase_actual}
+      {/* encabezado — fila 1: nombre + navegación */}
+      <div className="flex items-center justify-between gap-4 mb-1.5">
+        <div className="flex items-center gap-2 flex-wrap">
+          <h1 className="text-xl font-semibold" style={{ color: 'var(--ink)' }}>
+            {proyecto.nombre}
+          </h1>
+          {f1?.fiscal && (
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded"
+              style={{ background: 'rgba(74,158,187,0.10)', color: 'var(--accent)', border: '1px solid rgba(74,158,187,0.3)' }}>
+              FISCAL
             </span>
-          </div>
-          <p className="text-xs mt-1" style={{ color: 'var(--ink3)' }}>
-            {proyecto.cliente && <>{proyecto.cliente} · </>}{fecha}
-          </p>
+          )}
+          <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded"
+            style={{ background: 'rgba(0,0,0,0.04)', color: 'var(--ink3)', border: '1px solid var(--line)' }}>
+            {proyecto.fase_actual}
+          </span>
         </div>
-        {/* Panel derecho — navegación + exportar */}
-        <div className="flex flex-col gap-2.5 items-end flex-1 min-w-0">
 
-          {/* Fila 0 — Editar */}
-          <div className="flex items-center gap-3">
-            <span className="text-[10px] font-semibold w-28 text-right shrink-0" style={{ color: 'var(--ink3)' }}>
-              Editar sección:
-            </span>
-            <div className="flex items-center gap-1">
-              {[
-                { href: `/?proyecto=${proyecto.id}`,                   label: 'Fase 1' },
-                { href: `/proyectos/${proyecto.id}/fase2`,             label: 'Fase 2' },
-                { href: `/proyectos/${proyecto.id}/instrumentos`,      label: 'Instrumentos' },
-                { href: `/proyectos/${proyecto.id}/puesta-en-marcha`, label: 'Puesta en marcha' },
-                { href: '/',                                           label: '+ Nuevo' },
-              ].map(({ href, label }) => (
-                <Link key={href} href={href}
-                  className="rounded px-2.5 py-1 text-[11px] whitespace-nowrap transition-colors hover:bg-[#eef4f7]"
-                  style={{ border: '1px solid var(--line)', color: 'var(--ink2)' }}>
-                  {label}
-                </Link>
-              ))}
-            </div>
+        {/* Navegación editar */}
+        <div className="flex items-center gap-1">
+          {[
+            { href: `/?proyecto=${proyecto.id}`,                   label: 'Fase 1' },
+            { href: `/proyectos/${proyecto.id}/fase2`,             label: 'Fase 2' },
+            { href: `/proyectos/${proyecto.id}/instrumentos`,      label: 'Instrumentos' },
+            { href: `/proyectos/${proyecto.id}/puesta-en-marcha`, label: 'Puesta en marcha' },
+            { href: '/',                                           label: '+ Nuevo' },
+          ].map(({ href, label }) => (
+            <Link key={href} href={href}
+              className="rounded px-2.5 py-1 text-[11px] whitespace-nowrap transition-colors hover:bg-[#eef4f7]"
+              style={{ border: '1px solid var(--line)', color: 'var(--ink2)' }}>
+              {label}
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* encabezado — fila 2: metadata + exportar */}
+      <div className="flex items-center justify-between gap-4 mb-7">
+        <p className="text-xs shrink-0" style={{ color: 'var(--ink3)' }}>
+          {proyecto.cliente && <>{proyecto.cliente} · </>}{fecha}
+        </p>
+
+        {/* Exportar */}
+        <div className="flex items-center gap-3">
+
+          {/* PDF */}
+          <div className="flex items-center gap-1.5">
+            <span className="text-[9px] font-semibold tracking-widest uppercase" style={{ color: 'var(--ink3)' }}>PDF:</span>
+            <a href={`/api/exportar-dxf?id=${proyecto.id}`} download
+              title="Plano P&ID en formato DXF (AutoCAD)"
+              className="rounded px-2 py-0.5 text-[11px] font-medium whitespace-nowrap transition-opacity hover:opacity-85"
+              style={{ border: '1px solid var(--accent2)', color: 'var(--accent2)' }}>
+              Plano P&ID ↓
+            </a>
+            <a href={`/api/exportar-pdf?id=${proyecto.id}`} download
+              title="Reporte técnico de diseño en PDF"
+              className="rounded px-2 py-0.5 text-[11px] font-medium whitespace-nowrap transition-opacity hover:opacity-85"
+              style={{ background: 'var(--accent2)', color: '#fff' }}>
+              Reporte técnico ↓
+            </a>
+            <a href={`/api/exportar-memoria?id=${proyecto.id}`} download
+              title="Memoria de cálculo AGA 8/7/3"
+              className="rounded px-2 py-0.5 text-[11px] font-medium whitespace-nowrap transition-opacity hover:opacity-85"
+              style={{ background: 'var(--accent2)', color: '#fff' }}>
+              Memoria de cálculo ↓
+            </a>
+            <a href={`/api/exportar-paquete?id=${proyecto.id}`} download
+              title="Informe completo: Memoria + Reporte técnico + P&ID en un solo PDF"
+              className="rounded px-2 py-0.5 text-[11px] font-semibold whitespace-nowrap transition-opacity hover:opacity-85"
+              style={{ background: 'var(--ink)', color: '#fff' }}>
+              Informe completo ↓
+            </a>
           </div>
 
-          {/* Divisor */}
-          <div className="w-full h-px" style={{ background: 'var(--line)' }} />
+          <span className="w-px h-4 shrink-0" style={{ background: 'var(--line)' }} />
 
-          {/* Fila 1 — Generar PDF */}
-          <div className="flex items-center gap-3">
-            <span className="text-[10px] font-semibold w-28 text-right shrink-0" style={{ color: 'var(--ink3)' }}>
-              Generar PDF:
-            </span>
-            <div className="flex items-center gap-1">
-              <a href={`/api/exportar-dxf?id=${proyecto.id}`} download
-                title="Plano P&ID en formato DXF (AutoCAD)"
-                className="rounded px-2.5 py-1 text-[11px] font-medium whitespace-nowrap transition-opacity hover:opacity-85"
-                style={{ border: '1px solid var(--accent2)', color: 'var(--accent2)' }}>
-                Plano P&ID ↓
-              </a>
-              <a href={`/api/exportar-pdf?id=${proyecto.id}`} download
-                title="Reporte técnico de diseño en PDF"
-                className="rounded px-2.5 py-1 text-[11px] font-medium whitespace-nowrap transition-opacity hover:opacity-85"
-                style={{ background: 'var(--accent2)', color: '#fff' }}>
-                Reporte técnico ↓
-              </a>
-              <a href={`/api/exportar-memoria?id=${proyecto.id}`} download
-                title="Memoria de cálculo AGA 8/7/3"
-                className="rounded px-2.5 py-1 text-[11px] font-medium whitespace-nowrap transition-opacity hover:opacity-85"
-                style={{ background: 'var(--accent2)', color: '#fff' }}>
-                Memoria de cálculo ↓
-              </a>
-              <a href={`/api/exportar-paquete?id=${proyecto.id}`} download
-                title="Informe completo: Memoria + Reporte técnico + P&ID en un solo PDF"
-                className="rounded px-2.5 py-1 text-[11px] font-semibold whitespace-nowrap transition-opacity hover:opacity-85"
-                style={{ background: 'var(--ink)', color: '#fff' }}>
-                Informe completo ↓
-              </a>
-            </div>
-          </div>
-
-          {/* Fila 2 — Generar Word */}
-          <div className="flex items-center gap-3">
-            <span className="text-[10px] font-semibold w-28 text-right shrink-0" style={{ color: 'var(--ink3)' }}>
-              Generar Word:
-            </span>
-            <div className="flex items-center gap-1">
-              <a href={`/api/exportar-reporte-word?id=${proyecto.id}`} download
-                title="Reporte técnico editable en Word (.docx)"
-                className="rounded px-2.5 py-1 text-[11px] font-medium whitespace-nowrap transition-opacity hover:opacity-85"
-                style={{ background: '#2b579a', color: '#fff' }}>
-                Reporte técnico ↓
-              </a>
-              <a href={`/api/exportar-memoria-word?id=${proyecto.id}`} download
-                title="Memoria de cálculo editable en Word (.docx)"
-                className="rounded px-2.5 py-1 text-[11px] font-medium whitespace-nowrap transition-opacity hover:opacity-85"
-                style={{ background: '#2b579a', color: '#fff' }}>
-                Memoria de cálculo ↓
-              </a>
-            </div>
+          {/* Word */}
+          <div className="flex items-center gap-1.5">
+            <span className="text-[9px] font-semibold tracking-widest uppercase" style={{ color: 'var(--ink3)' }}>Word:</span>
+            <a href={`/api/exportar-reporte-word?id=${proyecto.id}`} download
+              title="Reporte técnico editable en Word (.docx)"
+              className="rounded px-2 py-0.5 text-[11px] font-medium whitespace-nowrap transition-opacity hover:opacity-85"
+              style={{ background: '#2b579a', color: '#fff' }}>
+              Reporte técnico ↓
+            </a>
+            <a href={`/api/exportar-memoria-word?id=${proyecto.id}`} download
+              title="Memoria de cálculo editable en Word (.docx)"
+              className="rounded px-2 py-0.5 text-[11px] font-medium whitespace-nowrap transition-opacity hover:opacity-85"
+              style={{ background: '#2b579a', color: '#fff' }}>
+              Memoria de cálculo ↓
+            </a>
           </div>
 
         </div>
