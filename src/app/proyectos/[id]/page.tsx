@@ -81,10 +81,9 @@ export default async function ProyectoDetallePage({
   return (
     <div className="max-w-[1260px] mx-auto px-6 py-8">
 
-      {/* encabezado — fila 1: proyecto + metadata + navegación */}
+      {/* Fila 1: info proyecto (izq) | Word (der) */}
       <div className="flex items-center justify-between gap-4 mb-2">
 
-        {/* Info del proyecto */}
         <div className="flex items-center gap-3 min-w-0 flex-wrap">
           <div className="flex items-center gap-1.5">
             <span className="text-[9px] font-semibold uppercase tracking-wider shrink-0" style={{ color: 'var(--ink3)' }}>Proyecto:</span>
@@ -116,8 +115,28 @@ export default async function ProyectoDetallePage({
           </div>
         </div>
 
-        {/* Navegación editar */}
-        <div className="flex items-center gap-1 shrink-0">
+        {/* Word — azul */}
+        <div className="flex items-center gap-1.5 shrink-0">
+          <span className="text-[9px] font-bold tracking-widest uppercase" style={{ color: 'var(--ink3)' }}>Word:</span>
+          {[
+            { href: `/api/exportar-reporte-word?id=${proyecto.id}`,  label: 'Reporte técnico',    title: 'Reporte técnico editable en Word (.docx)' },
+            { href: `/api/exportar-memoria-word?id=${proyecto.id}`,  label: 'Memoria de cálculo', title: 'Memoria de cálculo editable en Word (.docx)' },
+            { href: `/api/exportar-informe-word?id=${proyecto.id}`,  label: 'Informe completo',   title: 'Informe completo (Reporte + Memoria) en Word (.docx)' },
+          ].map(({ href, label, title }) => (
+            <a key={href} href={href} download title={title}
+              className="rounded px-2.5 py-1 text-[11px] font-medium whitespace-nowrap transition-opacity hover:opacity-80"
+              style={{ background: '#2b579a', color: '#fff' }}>
+              {label} ↓
+            </a>
+          ))}
+        </div>
+      </div>
+
+      {/* Fila 2: navegación editar (izq) | PDF (der) */}
+      <div className="flex items-center justify-between gap-4 mb-7">
+
+        {/* Navegación */}
+        <div className="flex items-center gap-1">
           {[
             { href: `/?proyecto=${proyecto.id}`,                   label: 'Fase 1' },
             { href: `/proyectos/${proyecto.id}/fase2`,             label: 'Fase 2' },
@@ -132,44 +151,25 @@ export default async function ProyectoDetallePage({
             </Link>
           ))}
         </div>
-      </div>
-
-      {/* encabezado — fila 2: exportar (una sola línea) */}
-      <div className="flex items-center justify-end gap-2 mb-7 flex-wrap">
 
         {/* PDF — teal */}
-        <span className="text-[9px] font-bold tracking-widest uppercase" style={{ color: 'var(--ink3)' }}>PDF:</span>
-        {[
-          { href: `/api/exportar-dxf?id=${proyecto.id}`,     label: 'Plano P&ID',       title: 'Plano P&ID en formato DXF (AutoCAD)',               outline: true },
-          { href: `/api/exportar-pdf?id=${proyecto.id}`,     label: 'Reporte técnico',  title: 'Reporte técnico de diseño en PDF',                  outline: false },
-          { href: `/api/exportar-memoria?id=${proyecto.id}`, label: 'Memoria de cálculo', title: 'Memoria de cálculo AGA 8/7/3 en PDF',            outline: false },
-          { href: `/api/exportar-paquete?id=${proyecto.id}`, label: 'Informe completo', title: 'Informe completo: Memoria + Reporte técnico + P&ID', outline: false },
-        ].map(({ href, label, title, outline }) => (
-          <a key={href} href={href} download title={title}
-            className="rounded px-2.5 py-1 text-[11px] font-medium whitespace-nowrap transition-opacity hover:opacity-80"
-            style={outline
-              ? { border: '1px solid var(--accent2)', color: 'var(--accent2)' }
-              : { background: 'var(--accent2)', color: '#fff' }}>
-            {label} ↓
-          </a>
-        ))}
-
-        <span className="w-px h-4 mx-1 shrink-0" style={{ background: 'var(--line)' }} />
-
-        {/* Word — azul */}
-        <span className="text-[9px] font-bold tracking-widest uppercase" style={{ color: 'var(--ink3)' }}>Word:</span>
-        {[
-          { href: `/api/exportar-reporte-word?id=${proyecto.id}`,  label: 'Reporte técnico',   title: 'Reporte técnico editable en Word (.docx)' },
-          { href: `/api/exportar-memoria-word?id=${proyecto.id}`,  label: 'Memoria de cálculo', title: 'Memoria de cálculo editable en Word (.docx)' },
-          { href: `/api/exportar-informe-word?id=${proyecto.id}`,  label: 'Informe completo',   title: 'Informe completo (Reporte + Memoria) en Word (.docx)' },
-        ].map(({ href, label, title }) => (
-          <a key={href} href={href} download title={title}
-            className="rounded px-2.5 py-1 text-[11px] font-medium whitespace-nowrap transition-opacity hover:opacity-80"
-            style={{ background: '#2b579a', color: '#fff' }}>
-            {label} ↓
-          </a>
-        ))}
-
+        <div className="flex items-center gap-1.5 shrink-0">
+          <span className="text-[9px] font-bold tracking-widest uppercase" style={{ color: 'var(--ink3)' }}>PDF:</span>
+          {[
+            { href: `/api/exportar-dxf?id=${proyecto.id}`,     label: 'Plano P&ID',        title: 'Plano P&ID en formato DXF (AutoCAD)',                outline: true },
+            { href: `/api/exportar-pdf?id=${proyecto.id}`,     label: 'Reporte técnico',   title: 'Reporte técnico de diseño en PDF',                   outline: false },
+            { href: `/api/exportar-memoria?id=${proyecto.id}`, label: 'Memoria de cálculo', title: 'Memoria de cálculo AGA 8/7/3 en PDF',              outline: false },
+            { href: `/api/exportar-paquete?id=${proyecto.id}`, label: 'Informe completo',  title: 'Informe completo: Memoria + Reporte técnico + P&ID',  outline: false },
+          ].map(({ href, label, title, outline }) => (
+            <a key={href} href={href} download title={title}
+              className="rounded px-2.5 py-1 text-[11px] font-medium whitespace-nowrap transition-opacity hover:opacity-80"
+              style={outline
+                ? { border: '1px solid var(--accent2)', color: 'var(--accent2)' }
+                : { background: 'var(--accent2)', color: '#fff' }}>
+              {label} ↓
+            </a>
+          ))}
+        </div>
       </div>
 
       {/* ── Stepper de progreso ── */}
