@@ -81,35 +81,47 @@ export default async function ProyectoDetallePage({
   return (
     <div className="max-w-[1260px] mx-auto px-6 py-8">
 
-      {/* breadcrumb */}
-      <div className="flex items-center gap-2 text-xs mb-5" style={{ color: 'var(--ink3)' }}>
-        <Link href="/proyectos" className="hover:underline" style={{ color: 'var(--accent)' }}>
-          Mis proyectos
-        </Link>
-        <span>/</span>
-        <span>{proyecto.nombre}</span>
-      </div>
+      {/* encabezado — fila 1: proyecto + metadata + navegación */}
+      <div className="flex items-center justify-between gap-4 mb-2">
 
-      {/* encabezado — fila 1: nombre + navegación */}
-      <div className="flex items-center justify-between gap-4 mb-1.5">
-        <div className="flex items-center gap-2 flex-wrap">
-          <h1 className="text-xl font-semibold" style={{ color: 'var(--ink)' }}>
-            {proyecto.nombre}
-          </h1>
-          {f1?.fiscal && (
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded"
-              style={{ background: 'rgba(74,158,187,0.10)', color: 'var(--accent)', border: '1px solid rgba(74,158,187,0.3)' }}>
-              FISCAL
+        {/* Info del proyecto */}
+        <div className="flex items-center gap-3 min-w-0 flex-wrap">
+          <div className="flex items-center gap-1.5">
+            <span className="text-[9px] font-semibold uppercase tracking-wider shrink-0" style={{ color: 'var(--ink3)' }}>Proyecto:</span>
+            <Link href="/proyectos" className="text-[11px] hover:underline shrink-0" style={{ color: 'var(--accent)' }}>
+              Mis proyectos
+            </Link>
+            <span className="text-[11px]" style={{ color: 'var(--ink3)' }}>/</span>
+            <span className="text-[11px] font-semibold" style={{ color: 'var(--ink)' }}>{proyecto.nombre}</span>
+            {f1?.fiscal && (
+              <span className="text-[9px] font-mono px-1.5 py-0.5 rounded"
+                style={{ background: 'rgba(74,158,187,0.10)', color: 'var(--accent)', border: '1px solid rgba(74,158,187,0.3)' }}>
+                FISCAL
+              </span>
+            )}
+            <span className="text-[9px] font-mono uppercase px-1.5 py-0.5 rounded"
+              style={{ background: 'rgba(0,0,0,0.04)', color: 'var(--ink3)', border: '1px solid var(--line)' }}>
+              {proyecto.fase_actual}
             </span>
+          </div>
+          <span className="w-px h-3.5 shrink-0" style={{ background: 'var(--line)' }} />
+          {proyecto.cliente && (
+            <>
+              <div className="flex items-center gap-1">
+                <span className="text-[9px] font-semibold uppercase tracking-wider" style={{ color: 'var(--ink3)' }}>Cliente:</span>
+                <span className="text-[11px]" style={{ color: 'var(--ink2)' }}>{proyecto.cliente}</span>
+              </div>
+              <span className="w-px h-3.5 shrink-0" style={{ background: 'var(--line)' }} />
+            </>
           )}
-          <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded"
-            style={{ background: 'rgba(0,0,0,0.04)', color: 'var(--ink3)', border: '1px solid var(--line)' }}>
-            {proyecto.fase_actual}
-          </span>
+          <div className="flex items-center gap-1">
+            <span className="text-[9px] font-semibold uppercase tracking-wider" style={{ color: 'var(--ink3)' }}>Fecha:</span>
+            <span className="text-[11px]" style={{ color: 'var(--ink2)' }}>{fecha}</span>
+          </div>
         </div>
 
         {/* Navegación editar */}
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 shrink-0">
           {[
             { href: `/?proyecto=${proyecto.id}`,                   label: 'Fase 1' },
             { href: `/proyectos/${proyecto.id}/fase2`,             label: 'Fase 2' },
@@ -126,11 +138,9 @@ export default async function ProyectoDetallePage({
         </div>
       </div>
 
-      {/* encabezado — fila 2: metadata + exportar */}
-      <div className="flex items-center justify-between gap-4 mb-7">
-        <p className="text-xs shrink-0" style={{ color: 'var(--ink3)' }}>
-          {proyecto.cliente && <>{proyecto.cliente} · </>}{fecha}
-        </p>
+      {/* encabezado — fila 2: exportar */}
+      <div className="flex items-center justify-end gap-4 mb-7">
+        <p className="text-xs shrink-0 hidden" />
 
         {/* Exportar */}
         <div className="flex items-center gap-3">
