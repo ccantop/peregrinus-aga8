@@ -88,11 +88,7 @@ export default async function ProyectoDetallePage({
         <div className="flex items-center gap-3 min-w-0 flex-wrap">
           <div className="flex items-center gap-1.5">
             <span className="text-[9px] font-semibold uppercase tracking-wider shrink-0" style={{ color: 'var(--ink3)' }}>Proyecto:</span>
-            <Link href="/proyectos" className="text-[11px] hover:underline shrink-0" style={{ color: 'var(--accent)' }}>
-              Mis proyectos
-            </Link>
-            <span className="text-[11px]" style={{ color: 'var(--ink3)' }}>/</span>
-            <span className="text-[11px] font-semibold" style={{ color: 'var(--ink)' }}>{proyecto.nombre}</span>
+            <span className="text-[13px] font-semibold" style={{ color: 'var(--ink)' }}>{proyecto.nombre}</span>
             {f1?.fiscal && (
               <span className="text-[9px] font-mono px-1.5 py-0.5 rounded"
                 style={{ background: 'rgba(74,158,187,0.10)', color: 'var(--accent)', border: '1px solid rgba(74,158,187,0.3)' }}>

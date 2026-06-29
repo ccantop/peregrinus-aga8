@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import Link from 'next/link'
+import { NavLinks } from '@/components/NavLinks'
 import { createClient } from '@/lib/supabase/server'
 import { logout } from '@/lib/acciones/auth'
 import './globals.css'
@@ -42,27 +43,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             </Link>
             {user && (
               <nav className="flex items-center gap-1 ml-auto">
-                <Link
-                  href="/"
-                  className="text-xs px-3 py-1.5 rounded transition-colors hover:bg-[#eef4f7]"
-                  style={{ color: 'var(--ink2)' }}
-                >
-                  Nuevo proyecto
-                </Link>
-                <Link
-                  href="/proyectos"
-                  className="text-xs px-3 py-1.5 rounded transition-colors hover:bg-[#eef4f7]"
-                  style={{ color: 'var(--ink2)' }}
-                >
-                  Mis proyectos
-                </Link>
-                <Link
-                  href="/guia"
-                  className="text-xs px-3 py-1.5 rounded transition-colors hover:bg-[#eef4f7]"
-                  style={{ color: 'var(--ink2)' }}
-                >
-                  Guía
-                </Link>
+                <NavLinks />
               </nav>
             )}
           </div>
